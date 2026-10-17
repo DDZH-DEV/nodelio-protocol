@@ -2,7 +2,6 @@
   "schema_version": 1,
   "protocol_version": 1,
   "platform": "esp32-panel",
-  "profile": "esp32-panel-480",
   "capabilities": [
     "content.text",
     "content.list",

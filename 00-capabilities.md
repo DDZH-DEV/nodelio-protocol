@@ -97,7 +97,7 @@ surfaces_ok =
 | `action.invoke` | 可向 Host 云发起 skill invoke |
 | `action.play` | 可触发「播放」类 action（具体管线见 media.*） |
 | `action.pause` / `action.next` / `action.prev` | 播控 |
-| `action.open_url` | 端**本地直接**打开 http(s)（多为手机）。注意：`handoff.kind=open_url` 归 `action.handoff`（交给 companion 打开），两者不要混用 |
+| `action.open_url` | 端**本地直接**打开 http(s)（多为手机），对应 `local: web.open_url`；`handoff.kind=open_url` 归 `action.handoff`（交给 companion 打开），两者不要混用（[03-content.md](03-content.md) §4.2） |
 | `action.handoff` | 可把动作交给 companion 设备（含 `handoff.kind=open_url` 转交 companion 打开） |
 | `net.http_via_server` | 仅经 Host 云访问外网（墙板默认）；名字里的 server 指 Host 云 |
 | `net.http_direct` | 允许端直连外网（慎用） |
@@ -159,7 +159,7 @@ surfaces_ok =
 4. 性能不够（OOM、无法与语音会话并存、仅支持 PCM 不支持 MP3）→ **不要申报**对应能力，或收紧 `limits.media` 后仍测不过则撤声明。
 5. 平台算力、互斥、功耗等细节见 [06-platform-profiles.md](06-platform-profiles.md)；**协议只消费申报结果**。
 
-### 3.7 `limits.media`（可选，有 media.* 时建议）
+### 3.7 `limits.media`（有 `media.*` 时按管线定必填）
 
 ```json
 "limits": {
@@ -176,14 +176,21 @@ surfaces_ok =
 }
 ```
 
+| 申报的能力 | `limits.media` 要求 | 理由 |
+|-------------|---------------------|------|
+| `media.play_local` | **MUST** 存在，且 `formats` **MUST** 非空、`fetch` **MUST** 与 `net.*` 一致 | 本机解码集是端独有事实；Host 无法猜格式，缺了就无法做可播性预检 |
+| `media.play_via_xiaozhi` | MAY 省略（§3.5.1：对侧承担解码）；已知对侧格式/码率时宜填以便云端预检 | 解码不在本端 |
+| `media.play_handoff` | MAY 省略；若已知 companion 能力可填 | 播放发生在 companion |
+| 未申报任何 `media.*` | **MUST NOT** 出现 `limits.media` | 无管线却给媒体上限 = 自相矛盾，Host 应记 warning |
+
 | 字段 | 说明 |
 |------|------|
-| `formats` | 本机可解码的 `playback.mime` 白名单 |
+| `formats` | 本机可解码的 `playback.mime` 白名单，**完整 MIME 形式**（`audio/mpeg`；与 `limits.image.formats` 的短名不同，映射见 §3.8） |
 | `max_bitrate_kbps` / `max_duration_sec` | 软上限；超限可拒播或只播前 N 秒（端自定，须可预期） |
-| `concurrent_with_voice_session` | `false` = 播前须结束/挂起语音助理会话（嵌入式常见） |
-| `fetch` | `http_via_server` \| `http_direct`；须与 `net.*` 能力一致 |
+| `concurrent_with_voice_session` | `false` = 播前须结束/挂起语音助理会话（嵌入式常见）；申报 `media.play_local` 时**宜**显式写出（缺省按端自定） |
+| `fetch` | `http_via_server` \| `http_direct`；**须与 `net.*` 能力一致** |
 
-无 `limits.media` 时：端仍须遵守已声明的 `media.*`；Host 云无法替端保证码率可行，只宜按设备档案做粗裁剪。
+无 `limits.media` 时（仅对 `play_via_xiaozhi` / `play_handoff` 合法）：端仍须遵守已声明的 `media.*`；Host 云无法替端保证码率可行，只宜按设备档案做粗裁剪。
 
 ### 3.8 词典的机器可读形式与校验策略（硬性）
 
@@ -252,7 +259,7 @@ surfaces_ok =
 
 **surfaces：** `card`, `home_tile`, `notification`, `voice_reply`, `now_playing`（`now_playing` 仅在确有播控 UI 时声明）
 
-**limits：** 见 §2 表；有 `media.play_local` 时须带 `limits.media`（建议 `concurrent_with_voice_session: false`，`fetch: http_via_server`）
+**limits：** 见 §2 表；有 `media.play_local` 时**必须**带 `limits.media`（§3.7 必填表；建议 `concurrent_with_voice_session: false`，`fetch: http_via_server`）
 
 硬件能不能播、内存够不够 → [06-platform-profiles.md](06-platform-profiles.md) §esp32-panel，**不由本词典保证**。
 
@@ -261,7 +268,7 @@ surfaces_ok =
 - 上述 content.* 全开 + `content.image` + `content.image_gallery`
 - `media.play_local`, `action.play`, `action.pause`, `action.open_url`, `action.handoff`, `net.http_via_server`
 - surfaces: `card`, `fullscreen`, `notification`, `now_playing`, `voice_reply`
-- `limits.media` 可较宽；`concurrent_with_voice_session` 可由实现决定
+- `limits.media` **必须带**（申报了 `media.play_local`，§3.7）；值可较宽，`concurrent_with_voice_session` 可由实现决定
 
 ### `linux-kiosk`
 

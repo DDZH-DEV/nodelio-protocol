@@ -15,9 +15,9 @@ Surface 只是**槽位名字**（结果出现在「卡片区 / 首页磁贴 / �
 | surface | 含义 | 典型端 |
 |---------|------|--------|
 | `card` | 技能结果 / 会话区卡片 | 墙板、手机 |
-| `home_tile` | 首页常驻入口磁贴 | 墙板（与 layout 并存） |
+| `home_tile` | 首页常驻入口磁贴 | 墙板（与控家入口并存） |
 | `fullscreen` | 沉浸（播放器、大图） | 手机、大屏 |
-| `voice_reply` | 以口述 / TTS 为主（可无像素 UI） | 无屏、小智口语 |
+| `voice_reply` | 以口述 / TTS 为主（可无像素 UI） | 无屏音箱、语音助理口语 |
 | `notification` | 短时提示（toast / 系统通知） | 手机；墙板 toast |
 | `now_playing` | 迷你播控条 | 有扬声器且支持播控的端 |
 
@@ -84,9 +84,9 @@ usable_surfaces = app.surfaces ∩ device.surfaces
 | 手机 | `fullscreen` | 富播放器 + `media.play_local` |
 | 音箱 | `voice_reply` | 播报 `spoken.text` + 直接播第一首（若有 media） |
 
-## 5. home_tile 与控家 layout
+## 5. home_tile 与控家入口
 
-- `home_tile` 是技能入口，**不替代** layout 里的灯控磁贴。
+- `home_tile` 是技能入口，**不替代**各产品控家通道里的设备开关磁贴。
 - 墙板可将技能入口放在系统「技能」页或少量首页槽位；schema 增量须向后兼容。
 - 磁贴点击 → 本地打开 `card` 或直接 `invoke` 默认查询（由应用 `ui` / 配置决定）。
 - **钉选元数据**（`pinned` / `home_order` / 默认 invoke 参数）**不属于** Envelope 字段，也不属于本协议：由 Host 云按设备隔离下发，形状由各 Host 自己的产品文档规定。协议只保证：这些元数据不得改变 §1 的 surface 语义与 §3 的 hints 含义。

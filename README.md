@@ -120,7 +120,7 @@ Surface + hints       出现在哪、怎么挤（非控件树）
 | **Envelope** | invoke 的统一结果信封（[03-content.md](03-content.md)） | 应用上游（推荐直出）或发布者适配服务 |
 | **档 A / B / C** | A = 上游直接返回 Envelope；B = 发布者自建适配服务输出 Envelope；C = 某一 Host 在云内为你写专用转换（**非协议义务**）。详见 [08-publishers.md](08-publishers.md) §3 | 发布者（A/B） |
 
-> 「小智」是 `media.play_via_xiaozhi` 这一**历史能力名**里的厂商词，指一类语音助理固件生态；其协议语义见 [00-capabilities.md](00-capabilities.md) §3.5.1，正名提案见 [07-evolution.md](07-evolution.md) §4.1。协议正文其余部分不使用厂商名。
+> 「小智」是 `media.play_via_xiaozhi` 这一**历史能力名**里的厂商词，指一类语音助理固件生态；其协议语义见 [00-capabilities.md](00-capabilities.md) §3.5.1，正名提案见 [07-evolution.md](07-evolution.md) §4.1。协议正文**不以厂商名、产品路径或私有仓库字段作规范性依赖**；仅允许两类非规范指代——渲染栈举例（LVGL / Compose / Qt 等）与上述历史名的生态说明。
 
 ## 文档索引
 

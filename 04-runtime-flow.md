@@ -8,7 +8,8 @@
 |------|--------|
 | 流程顺序、每一步的**输入语义与产出语义**（谁提供什么、必须校验什么） | **协议** |
 | 设备侧「已安装清单」的**文档形状**（§3.2 + [schemas/installed-app-list.schema.json](schemas/installed-app-list.schema.json)）、Envelope 语义、能力匹配 | **协议** |
-| HTTP **路径名、方法、鉴权头、响应外壳、错误码 → HTTP 状态码映射** | **非协议**（Host 产品实现） |
+| **端 ↔ Host 之间**的 HTTP 路径名、方法、鉴权头、响应外壳、错误码 → HTTP 状态码映射 | **非协议**（Host 产品实现） |
+| **Host ↔ 上游**的调用方式：应用包 `invoke.method`（`GET`\|`POST`）、`url`、`timeout_ms` | **协议**（见 §4；由发布者声明） |
 | 本文出现的 `/api/…/skills/install`、`/panel/skills/{id}/invoke` 等 | 仅为**可读的示例语义**，第三方不得假定任一 Host 使用这些路径 |
 
 **给端实现者的结论**：端只需要问「我如何从我自己的 Host 取已安装清单 / 如何 invoke」——答案是**载荷结构由本协议规定，传输接口由你的 Host 文档规定**。两个 Host 可以有不同的 URL 而仍然都合规。若你要写可跨 Host 复用的端代码，把 API 适配层留在端外或按你 Host 的文档实现。
@@ -121,7 +122,7 @@ Host 云调上游 → 校验/裁剪 Content Envelope → 端选 Surface 渲染
 ```
 
 - **默认路径**：上游 = Envelope（[08-publishers.md](08-publishers.md) 档 A/B）。Host **不得**因「无本厂 adapter」拒绝合法 Envelope 上游。
-- **HTTP method**：路径与具体 URL 由 Host 实现决定（协议不规定路径）。带参数 body / 有副作用的 invoke 用 `POST`；仅无副作用的纯查询（`app-package.invoke.method=GET`）可用 `GET` 并随查询串传参。两端/Host 须就方法语义一致。
+- **`invoke.method`（Host → 上游，属协议）**：应用包声明 `POST`（推荐：参数放 body，可有副作用）或 `GET`（**仅限无副作用查询**，由 Host 按 `input_schema` 编码 query 串）。Host **必须**按声明的方法调用上游。此规定**不约束**端 ↔ Host 之间用什么方法/路径（那是 §0 的「非协议」项）。
 - **请求/响应语义**：请求体只含 `input_schema` 参数，**禁止**携带密钥；响应体是一个完整 Content Envelope（含失败情形——用 HTTP 状态 + `status:"error"` 双轨时，Envelope **必须**仍然合法，见 [03-content.md](03-content.md) §3.1）。
 - `request_id`：由**发起方**（端 / Host / 语音链路）生成并原样回带，用于串联日志；Host 不得自行替换后又不告知。格式不限，建议 `[A-Za-z0-9_-]{1,64}`。
 - 超时：`invoke.timeout_ms`（默认建议 ≤ 6000ms）；超时 → `status:"error"` + `code:"upstream_timeout"`。
@@ -185,11 +186,11 @@ Host 会用**自己**的网络栈去拉取任意第三方提供的 URL（市场�
 | 滥用 | Host **可**记录 invoke 审计（含 `deviceId`）并对同一设备限流；返回 `rate_limited` |
 | 拒装诊断 | Host 因 schema/必填/形状不合法能力名拒装时，**必须**返回可定位信息（字段路径 + 非法值），不得只回「校验失败」 |
 
-## 9. 与控家并行
+## 9. 与控家通道并行
 
 | 通道 | 用途 |
 |------|------|
-| layout + `panel/command` | 灯、继电器、PWM、情景 |
+| 各产品的**控家通道**（设备开关、情景、PWM 等；实现名因产品而异，如某产品的 layout + 控制主题） | 灯、继电器、PWM、情景 |
 | 本协议 skills | 第三方内容与工具 |
 
-勿用技能 Envelope 替代设备开关指令；勿在技能里下发任意 GPIO。
+勿用技能 Envelope 替代设备开关指令；勿在技能里下发任意 GPIO。两条通道的**隔离语义**属协议；控家通道的名称、格式与主题不属本协议。

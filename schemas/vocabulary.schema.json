@@ -68,7 +68,8 @@
     },
     "local_action_v1": {
       "type": "string",
-      "enum": ["media.play", "media.pause", "media.stop", "media.next", "media.prev"]
+      "enum": ["media.play", "media.pause", "media.stop", "media.next", "media.prev", "web.open_url"],
+      "description": "run=local 的动作 ID。web.open_url = 端在**本机**打开 URL（requires action.open_url）；转交 companion 打开用 run=handoff + kind=open_url（requires action.handoff）。"
     },
     "handoff_kind_v1": {
       "type": "string",

@@ -2,7 +2,6 @@
   "schema_version": 1,
   "protocol_version": 1,
   "platform": "voice",
-  "profile": "voice-only",
   "capabilities": [
     "content.text",
     "content.error",

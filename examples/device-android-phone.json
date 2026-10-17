@@ -2,7 +2,6 @@
   "schema_version": 1,
   "protocol_version": 1,
   "platform": "android",
-  "profile": "android-phone",
   "capabilities": [
     "content.text",
     "content.list",
@@ -33,6 +32,12 @@
   "limits": {
     "max_content_bytes": 262144,
     "max_list_items": 50,
-    "image": { "allowed": true, "max_edge_px": 2048, "formats": ["jpeg", "png", "webp"] }
+    "image": { "allowed": true, "max_edge_px": 2048, "formats": ["jpeg", "png", "webp"] },
+    "media": {
+      "formats": ["audio/mpeg", "audio/mp4", "audio/aac", "audio/ogg"],
+      "max_bitrate_kbps": 320,
+      "concurrent_with_voice_session": true,
+      "fetch": "http_via_server"
+    }
   }
 }

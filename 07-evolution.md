@@ -34,7 +34,7 @@
 
 1. **定结构，不定外观** — 禁止下发控件树、像素坐标、可执行 UI/脚本、`data:` 可执行载荷。
 2. **协议通用** — 正文与样例**禁止**依赖某厂商本机路径、私有仓库名、单一芯片丝印；产品细节放各厂商文档。
-3. **控家隔离** — 技能通道不替代 `layout` / 设备开关指令；禁止技能 Envelope 下发任意 GPIO。
+3. **控家隔离** — 技能通道不替代各产品的控家通道（设备开关指令）；禁止技能 Envelope 下发任意 GPIO。
 4. **密钥不下发** — 第三方 API Key 只留云端；协议字段不得鼓励明文进设备。
 5. **未知可忽略** — 新字段须能被旧端安全忽略；破坏性变更走 §5 版本规则。
 6. **诚实申报** — 不得用协议文案暗示「有某 profile 名就必然具备某媒体能力」。
@@ -100,8 +100,8 @@
 | 位置 | 必须怎么写 | 不得怎么写 |
 |------|------------|------------|
 | 任何文档根与对象 | `additionalProperties: true` | ❌ `false`（会拒 `x_` 扩展与旧 Host 新增字段，违反 [04-runtime-flow.md](04-runtime-flow.md) §8.2） |
-| 名字集合类字段：`capabilities`、`requires`、`optional`、`local`、`content[].type`、`card_type`、`surface`、`actions[].run`、`handoff.kind`、错误 `code` | **形状** `pattern` + `anyOf`（v1 词典 ∪ 形状合法的自由串），运行时降级 | ❌ 纯 `enum` 硬拒 |
-| 真正的封闭集合（`status`、`density`、`fetch`、`limits.image.formats`、`invoke.method`、`ui_hint`、`profile`） | 可以 `enum`（新增取值属 D 级，因为旧端遇未知值无法安全行为） | — |
+| 名字集合类字段：`capabilities`、`requires`、`optional`、`local`、`content[].type`、`card_type`、`surface`、`actions[].run`、`handoff.kind`、错误 `code`、**`profile`**、**`limits.*.formats`** | **形状** `pattern` + `anyOf`（v1 词典 ∪ 形状合法的自由串），运行时降级 | ❌ 纯 `enum` 硬拒 |
+| 真正的封闭集合（`status`、`density`、`fetch`、`invoke.method`、`ui_hint`、`disabled_reason`） | 可以 `enum`（新增取值属 D 级，因为旧端遇未知值无法安全行为） | — |
 | v1 权威词典 | 只维护在 [schemas/vocabulary.schema.json](schemas/vocabulary.schema.json) `$defs`，其余 schema 一律 `$ref` | ❌ 在各 schema 里复制一份枚举（会漂移） |
 | URL 字段 | `pattern: ^https://` 保持默认严格 | ❌ 为「内网联调」放宽 schema（例外是 Host 校验层的产品行为，见 [04-runtime-flow.md](04-runtime-flow.md) §8.1） |
 

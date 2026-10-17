@@ -159,4 +159,8 @@
 
 ## 7. Schema
 
-[schemas/marketplace.schema.json](schemas/marketplace.schema.json)
+- 市场索引：[schemas/marketplace.schema.json](schemas/marketplace.schema.json)
+- 安装产物（设备侧清单）：[schemas/installed-app-list.schema.json](schemas/installed-app-list.schema.json)（[04-runtime-flow.md](04-runtime-flow.md) §3.2）
+- 应用包：[schemas/app-package.schema.json](schemas/app-package.schema.json)（[02-app-package.md](02-app-package.md) §5）
+- 权威词典（`market_id`/`app_id` 用到的分类、能力名等）：[schemas/vocabulary.schema.json](schemas/vocabulary.schema.json)
+

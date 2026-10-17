@@ -7,9 +7,25 @@
 
 ---
 
+## 未发布（follow-up 轮）— Evolution **C**（白名单扩张）+ **A/B**（澄清与形状修正）— 不升版本
+
+> 直接在 `main` 上落地；来源：对合入轮的复查。逐项对应复查结论 1–5。
+
+1. **补 `action.open_url` 的可表达形态（真缺口）**：合入轮区分「本端直开」与「转交 companion」后，前者没有任何 action 写法可用（`local` 白名单只有 `media.*`）。`web.open_url` 加入 `local_action_v1` 词典与 03 §4.1 白名单；新增 03 §4.2 两条路对照表；00 §3.2 指回该表。旧端不认识的 `local` 本就忽略 → 安全，不升 major。
+2. **消除 04 §0 ↔ §4 矛盾**：§0 把「方法」整体列为非协议，§4 又开始规定方法语义。改为两层：**端 ↔ Host** 的方法/路径不属协议；**Host ↔ 上游** 的 `invoke.method` 属协议。§4 条目同步改写。
+3. **`limits.media` 定级**（原三处口径不一）：00 §3.7 按管线出必填表——`media.play_local` **必须**带 `formats`+`fetch`；`play_via_xiaozhi`/`play_handoff` 可省；未申报 `media.*` 则禁止出现 `limits.media`。`device-android-phone.json` 原本申报 `play_local` 却无 `limits.media`，已补（格式从宽、`http_via_server`，避免顺带声明 `net.http_direct` 这个与 esp32 样例立场不一致的产品决定）。
+4. **兑现 README「正文不用厂商名」承诺**：04 §9 `layout + panel/command` → 「各产品的控家通道」；05 §1/§5 `小智口语`、`home_tile` 段与 07 §2-3 的 `layout` 同步通用化；03 §6 改为「助理类 MCP（小智等属此类）」；05 §1 `与 layout 并存` → `与控家入口并存`。README 该句同时**收窄为准确表述**：不作规范性依赖，允许渲染栈举例与历史能力名的生态说明两类非规范指代。
+5. **schema 立场收尾**（07 §5.1 口诀的漏网）：`profile` 与 `limits.image.formats` 原为纯 `enum`，端/Host 对未知值本可安全忽略却会被校验拒掉 → 均改形状约束；`media.formats` 形状放宽到可带 codec 参数（`;codecs=opus`）。07 §5.1 表与 00 §3.8 说明同步。
+6. **样例统一线上形状**：4 个 `device-*.json` 全部去掉 `profile`（00 §4.1 步骤 6；`profile_v1` 词典与 00 §4.2 模板保留，仅示例不再混用）。
+7. **01 §7 Schema** 补列 `installed-app-list` / `app-package` / `vocabulary`。
+
+**明确未做**：不升 `schema_version`；`web.open_url` 暂不进 `examples/` 样例（`envelope-news-list.json` 仍示范 handoff 一条路，等 companion 实现验收后再加正例，避免教未验收的写法）。
+
+---
+
 ## 未发布（合入轮）— 以 `protocol-review-fixes` 为主干
 
-> 分支：`merge/protocol-review-main`。在 `deepseek-agent/protocol-review-fixes` 上吸收另两支的有用澄清；**不**合入 `protocol-harden` 的 `09-device-api.md`（Host HTTP 路径不属于协议，见 04 §0）。
+> 分支：`merge/protocol-review-main`。在 `deepseek-agent/protocol-review-fixes` 上吸收另两支的有用澄清；**不**合入 `protocol-harden` 的 `09-device-api.md`（**端 ↔ Host** 的 HTTP 路径不属于协议，见 04 §0）。
 
 ### 自 `protocol-harden` 吸收
 
@@ -22,7 +38,8 @@
 - **00 §3.2**：澄清 `action.open_url`（本端直开）与 `action.handoff` + `handoff.kind=open_url`（转交 companion）勿混用。
 - **04 §4**：补 HTTP method 语义（POST 有副作用 / GET 仅无副作用查询）；路径仍属 Host。
 
-（`auto_play`、厂商路径剥离、profile 线上形状等已在 review-fixes 覆盖，不再重复。）
+（`auto_play`、profile 线上形状等已在 review-fixes 覆盖。**厂商/产品路径剥离仅主体覆盖**：04 §9、05 §1/§5、07 §2、03 §6 的残留由 follow-up 轮补齐。`action.open_url` 的区分当时**缺可写形态**，由 follow-up 轮补 `web.open_url`——见上一节第 1 条。）
+
 
 ---
 

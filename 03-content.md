@@ -298,8 +298,18 @@ Capability: `content.error`（端应总能展示错误，即使未申报也建�
 | `media.pause` | 暂停 | 对应 `action.pause` 或已有播控 |
 | `media.stop` | 停止并释放解码器 | 同上 |
 | `media.next` / `media.prev` | 下一首 / 上一首 | `action.next` / `action.prev` |
+| `web.open_url` | 端在**本机**打开 `params.url`（系统浏览器 / in-app webview） | `action.open_url` |
 
 端不认识的 `local`：忽略该 action，禁止当脚本执行。管线选择：若只声明了 `media.play_local` 则走本机；只声明 `media.play_via_xiaozhi` 则走云；都有则端自定优先级（建议本机优先）。
+
+### 4.2 「打开链接」的两条路（易混，必读）
+
+| 想要的效果 | 写法 | 需要的能力 |
+|-------------|------|--------------|
+| 在**收消息的这台设备**上打开 | `{ "run": "local", "local": "web.open_url", "params": { "url": "https://…" } }` | `action.open_url` |
+| **转交** companion（如手机）打开 | `{ "run": "handoff", "handoff": { "kind": "open_url", "url": "https://…" } }` | `action.handoff` |
+
+墙板通常两个都不申报（无浏览器、也没有已配对 companion）→ 端隐藏按钮，不整卡失败。禁止为「本机打开」写 `handoff.kind=open_url`——那是把动作交给别的设备；反之亦然。
 
 ## 5. 降级矩阵（全局）
 
@@ -325,7 +335,7 @@ Capability: `content.error`（端应总能展示错误，即使未申报也建�
 
 ## 6. MCP 承载
 
-小智 MCP `tools/call` 结果当前多为 `content[].type=text`。
+助理类 MCP `tools/call` 结果当前多为 `content[].type=text`（小智等固件属此类；厂商名仅在此作生态指代）。
 
 | 阶段 | 要求 |
 |------|------|
