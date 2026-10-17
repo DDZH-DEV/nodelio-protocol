@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodelio.local/protocol/schemas/marketplace.schema.json",
+  "title": "MarketplaceIndex",
+  "type": "object",
+  "required": ["schema_version", "market_id", "name", "apps"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "market_id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "apps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "app_id",
+          "name",
+          "version",
+          "package_url",
+          "min_protocol",
+          "requires"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "app_id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "package_url": { "type": "string", "format": "uri" },
+          "icon_url": { "type": "string", "format": "uri" },
+          "summary": { "type": "string" },
+          "categories": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "min_protocol": { "type": "integer", "minimum": 1 },
+          "requires": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "optional": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "surfaces": {
+            "type": "array",
+            "items": { "$ref": "surfaces.schema.json" }
+          }
+        }
+      }
+    }
+  }
+}

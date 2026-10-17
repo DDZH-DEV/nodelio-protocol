@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "protocol_version": 1,
+  "platform": "esp32-panel",
+  "profile": "esp32-panel-480",
+  "capabilities": [
+    "content.text",
+    "content.list",
+    "content.music_list",
+    "content.news_list",
+    "content.weather",
+    "content.error",
+    "action.invoke",
+    "action.play",
+    "action.pause",
+    "net.http_via_server",
+    "input.touch",
+    "input.voice",
+    "display.color",
+    "media.play_local"
+  ],
+  "surfaces": ["card", "home_tile", "notification", "voice_reply", "now_playing"],
+  "limits": {
+    "max_content_bytes": 4096,
+    "max_list_items": 8,
+    "image": { "allowed": true, "max_edge_px": 480, "formats": ["jpeg", "png"] },
+    "media": {
+      "formats": ["audio/mpeg"],
+      "max_bitrate_kbps": 128,
+      "max_duration_sec": 600,
+      "concurrent_with_voice_session": false,
+      "fetch": "http_via_server"
+    }
+  }
+}

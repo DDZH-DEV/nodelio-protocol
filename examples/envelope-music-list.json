@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "request_id": "req_music_001",
+  "app_id": "music.search",
+  "status": "ok",
+  "content": [
+    {
+      "type": "music",
+      "id": "song_001",
+      "title": "晴天",
+      "artist": "周杰伦",
+      "album": "叶惠美",
+      "cover_url": "https://cdn.example.com/cover/qingtian.jpg",
+      "duration_ms": 269000,
+      "playback": {
+        "url": "https://cdn.example.com/audio/qingtian.mp3",
+        "mime": "audio/mpeg",
+        "expires_at": 1790000000
+      },
+      "actions": [
+        {
+          "id": "play",
+          "title": "播放",
+          "run": "local",
+          "local": "media.play",
+          "requires": ["media.play_local"]
+        }
+      ]
+    },
+    {
+      "type": "music",
+      "id": "song_002",
+      "title": "七里香",
+      "artist": "周杰伦",
+      "duration_ms": 299000,
+      "playback": {
+        "url": "https://cdn.example.com/audio/qilixiang.mp3",
+        "mime": "audio/mpeg",
+        "expires_at": 1790000000
+      }
+    }
+  ],
+  "display": {
+    "card_type": "music_list",
+    "title": "搜索结果",
+    "preferred_surface": "card",
+    "density": "compact",
+    "prefer_image": true,
+    "max_items": 8,
+    "ttl_sec": 300
+  },
+  "spoken": {
+    "text": "找到两首周杰伦的歌，晴天和七里香"
+  }
+}

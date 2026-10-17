@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "request_id": "req_news_001",
+  "app_id": "news.latest",
+  "status": "ok",
+  "content": [
+    {
+      "type": "news",
+      "id": "news_001",
+      "title": "示例新闻标题",
+      "summary": "这是一条用于协议联调的新闻摘要。",
+      "source": "示例通讯社",
+      "published_at": "2026-10-15T08:30:00Z",
+      "image_url": "https://cdn.example.com/news/001.jpg",
+      "article_url": "https://example.com/article/001",
+      "actions": [
+        {
+          "id": "open",
+          "title": "阅读",
+          "run": "handoff",
+          "handoff": {
+            "kind": "open_url",
+            "url": "https://example.com/article/001"
+          },
+          "requires": ["action.handoff"]
+        }
+      ]
+    }
+  ],
+  "display": {
+    "card_type": "news_list",
+    "title": "最新新闻",
+    "preferred_surface": "card",
+    "density": "compact",
+    "max_items": 8,
+    "ttl_sec": 600
+  },
+  "spoken": {
+    "text": "最新一条：示例新闻标题"
+  }
+}

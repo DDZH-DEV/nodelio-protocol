@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "protocol_version": 1,
+  "platform": "voice",
+  "profile": "voice-only",
+  "capabilities": [
+    "content.text",
+    "content.error",
+    "action.invoke",
+    "input.voice",
+    "display.none",
+    "media.play_via_xiaozhi",
+    "net.http_via_server"
+  ],
+  "surfaces": ["voice_reply"],
+  "limits": {
+    "max_content_bytes": 2048,
+    "max_list_items": 5,
+    "image": { "allowed": false }
+  }
+}

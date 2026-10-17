@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodelio.local/protocol/schemas/app-package.schema.json",
+  "title": "AppPackage",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "app_id",
+    "version",
+    "name",
+    "min_protocol",
+    "requires",
+    "invoke"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "app_id": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "icon_url": { "type": "string", "format": "uri" },
+    "categories": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "min_protocol": { "type": "integer", "minimum": 1 },
+    "requires": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "optional": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "surfaces": {
+      "type": "array",
+      "items": { "$ref": "surfaces.schema.json" }
+    },
+    "fallback": {
+      "type": "object",
+      "properties": {
+        "card_type": { "type": "string" }
+      }
+    },
+    "config_schema": { "type": "object" },
+    "input_schema": { "type": "object" },
+    "invoke": {
+      "type": "object",
+      "required": ["method"],
+      "properties": {
+        "method": { "type": "string", "enum": ["POST", "GET"] },
+        "timeout_ms": { "type": "integer", "minimum": 500 },
+        "result_types": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "default_display": { "type": "object" }
+      }
+    },
+    "expose_mcp": { "type": "boolean" },
+    "mcp": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "entry_title": { "type": "string" },
+        "entry_icon": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodelio.local/protocol/schemas/content-envelope.schema.json",
+  "title": "ContentEnvelope",
+  "type": "object",
+  "required": ["schema_version", "app_id", "status", "content", "display"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "request_id": { "type": "string" },
+    "app_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["ok", "error"] },
+    "truncated": { "type": "boolean" },
+    "content": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "list_item",
+              "image",
+              "music",
+              "news",
+              "weather",
+              "action",
+              "error"
+            ]
+          },
+          "id": { "type": "string" }
+        }
+      }
+    },
+    "display": {
+      "type": "object",
+      "required": ["card_type"],
+      "properties": {
+        "card_type": {
+          "type": "string",
+          "enum": [
+            "plain_result",
+            "list",
+            "image",
+            "image_gallery",
+            "music_list",
+            "news_list",
+            "weather",
+            "error"
+          ]
+        },
+        "title": { "type": "string" },
+        "preferred_surface": { "$ref": "surfaces.schema.json" },
+        "density": {
+          "type": "string",
+          "enum": ["compact", "normal", "rich"]
+        },
+        "prefer_image": { "type": "boolean" },
+        "max_items": { "type": "integer", "minimum": 1 },
+        "ttl_sec": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "spoken": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

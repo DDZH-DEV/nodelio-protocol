@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "app_id": "music.search",
+  "version": "1.0.0",
+  "name": "音乐搜索",
+  "description": "搜索歌曲并返回可播放列表",
+  "icon_url": "https://cdn.example.com/icons/music.png",
+  "categories": ["music"],
+  "min_protocol": 1,
+  "requires": ["content.music_list", "action.invoke"],
+  "optional": ["media.play_local", "media.play_via_xiaozhi", "content.image"],
+  "surfaces": ["card", "now_playing", "voice_reply", "fullscreen"],
+  "fallback": { "card_type": "list" },
+  "config_schema": {
+    "type": "object",
+    "properties": {
+      "api_key": {
+        "type": "string",
+        "title": "API Key",
+        "secret": true
+      },
+      "region": {
+        "type": "string",
+        "title": "地区",
+        "enum": ["cn", "global"],
+        "default": "cn"
+      }
+    },
+    "required": ["api_key"]
+  },
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "keyword": { "type": "string", "title": "关键词" },
+      "limit": { "type": "integer", "default": 5, "minimum": 1, "maximum": 20 }
+    },
+    "required": []
+  },
+  "invoke": {
+    "method": "POST",
+    "timeout_ms": 6000,
+    "result_types": ["music_list", "list", "plain_result"],
+    "default_display": {
+      "card_type": "music_list",
+      "preferred_surface": "card",
+      "density": "compact",
+      "max_items": 8
+    }
+  },
+  "expose_mcp": true,
+  "mcp": {
+    "name": "music.search",
+    "description": "Search music tracks by keyword"
+  },
+  "ui": {
+    "entry_title": "音乐",
+    "entry_icon": "music_note"
+  }
+}

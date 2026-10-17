@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "protocol_version": 1,
+  "platform": "android",
+  "profile": "android-phone",
+  "capabilities": [
+    "content.text",
+    "content.list",
+    "content.image",
+    "content.image_gallery",
+    "content.music",
+    "content.music_list",
+    "content.news",
+    "content.news_list",
+    "content.weather",
+    "content.action",
+    "content.error",
+    "action.invoke",
+    "action.play",
+    "action.pause",
+    "action.next",
+    "action.prev",
+    "action.open_url",
+    "action.handoff",
+    "net.http_via_server",
+    "input.touch",
+    "input.voice",
+    "display.color",
+    "media.play_local",
+    "media.play_handoff"
+  ],
+  "surfaces": ["card", "fullscreen", "notification", "now_playing", "voice_reply"],
+  "limits": {
+    "max_content_bytes": 262144,
+    "max_list_items": 50,
+    "image": { "allowed": true, "max_edge_px": 2048, "formats": ["jpeg", "png", "webp"] }
+  }
+}

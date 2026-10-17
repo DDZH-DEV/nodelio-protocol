@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "market_id": "com.example.nodelio-market",
+  "name": "示例应用市场",
+  "description": "演示音乐与新闻技能；条目带 requires 供端过滤",
+  "updated_at": "2026-10-15T00:00:00Z",
+  "apps": [
+    {
+      "app_id": "music.search",
+      "name": "音乐搜索",
+      "version": "1.0.0",
+      "package_url": "https://cdn.example.com/apps/music.search/1.0.0.json",
+      "icon_url": "https://cdn.example.com/icons/music.png",
+      "summary": "搜索并播放歌曲",
+      "categories": ["music"],
+      "min_protocol": 1,
+      "requires": ["content.music_list", "action.invoke"],
+      "optional": ["media.play_local", "media.play_via_xiaozhi", "content.image"],
+      "surfaces": ["card", "now_playing", "voice_reply", "fullscreen"]
+    },
+    {
+      "app_id": "news.latest",
+      "name": "最新新闻",
+      "version": "1.0.0",
+      "package_url": "https://cdn.example.com/apps/news.latest/1.0.0.json",
+      "summary": "获取新闻摘要列表",
+      "categories": ["news"],
+      "min_protocol": 1,
+      "requires": ["content.news_list", "action.invoke"],
+      "optional": ["content.image", "action.open_url", "action.handoff"],
+      "surfaces": ["card", "voice_reply", "notification"]
+    },
+    {
+      "app_id": "gallery.photo",
+      "name": "高清图库",
+      "version": "1.0.0",
+      "package_url": "https://cdn.example.com/apps/gallery.photo/1.0.0.json",
+      "summary": "需要图库与全屏能力（墙板通常不可装）",
+      "categories": ["tool"],
+      "min_protocol": 1,
+      "requires": ["content.image_gallery", "action.invoke", "display.color"],
+      "optional": ["input.touch"],
+      "surfaces": ["fullscreen", "card"]
+    }
+  ]
+}

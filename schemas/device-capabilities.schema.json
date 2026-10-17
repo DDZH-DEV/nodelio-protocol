@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodelio.local/protocol/schemas/device-capabilities.schema.json",
+  "title": "DeviceCapabilities",
+  "type": "object",
+  "required": ["schema_version", "protocol_version", "platform", "capabilities"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "protocol_version": { "type": "integer", "minimum": 1 },
+    "platform": { "type": "string", "minLength": 1 },
+    "profile": {
+      "type": "string",
+      "enum": ["esp32-panel-480", "android-phone", "linux-kiosk", "voice-only"]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "extra_capabilities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "disabled": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "surfaces": {
+      "type": "array",
+      "items": { "$ref": "surfaces.schema.json" },
+      "uniqueItems": true
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_content_bytes": { "type": "integer", "minimum": 256 },
+        "max_list_items": { "type": "integer", "minimum": 1 },
+        "image": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allowed": { "type": "boolean" },
+            "max_edge_px": { "type": "integer", "minimum": 1 },
+            "formats": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["jpeg", "png", "webp"] }
+            }
+          }
+        },
+        "media": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "formats": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "max_bitrate_kbps": { "type": "integer", "minimum": 8 },
+            "max_duration_sec": { "type": "integer", "minimum": 1 },
+            "concurrent_with_voice_session": { "type": "boolean" },
+            "fetch": {
+              "type": "string",
+              "enum": ["http_via_server", "http_direct"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
