@@ -51,6 +51,10 @@
       "required": ["method"],
       "properties": {
         "method": { "type": "string", "enum": ["POST", "GET"] },
+        "url": {
+          "type": "string",
+          "description": "Upstream invoke URL; public https preferred. Relative paths only when same-origin with Host."
+        },
         "timeout_ms": { "type": "integer", "minimum": 500 },
         "result_types": {
           "type": "array",

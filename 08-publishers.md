@@ -1,7 +1,7 @@
 # 08 — 发布者指南（多市场 / 通用接口）
 
 > 给**应用市场作者**与**应用作者**。只读本文 + schema + examples 即可发市场；**不必**改协议仓库、不必改任一端固件、**不必**向某一 Host 云提交专用适配代码（见 §3 档 A/B）。  
-> `Evolution: A`（文档澄清；不升 `schema_version`）。
+> `Evolution: A`（文档澄清：`expires_at` Unix 秒、公网 HTTPS 边界、档 A 样例、未知字段忽略；**不升** `schema_version`）。
 
 ## 1. 你在生态里的位置
 
@@ -18,9 +18,9 @@ Host 云：install、存密钥、代设备 invoke
 
 | 步骤 | 产出 | 要求 |
 |------|------|------|
-| 1 | `marketplace.json` | 符合 [01-marketplace.md](01-marketplace.md)；公开 HTTPS；无 token。可放任意静态站或 CDN |
-| 2 | 每个应用一份 `app-package.json` | 符合 [02-app-package.md](02-app-package.md)；`package_url` 稳定（建议含版本号）。脱离索引所在站点时用**绝对 https**；与 Host 同源时才可用该 Host 约定的相对路径 |
-| 3 | invoke 上游 | **响应体为 Content Envelope**（[03-content.md](03-content.md)）；HTTPS；超时内返回 |
+| 1 | `marketplace.json` | 符合 [01-marketplace.md](01-marketplace.md)；公网用 HTTPS；无 token。可放任意静态站或 CDN |
+| 2 | 每个应用一份 `app-package.json` | 符合 [02-app-package.md](02-app-package.md)；`package_url` 稳定（建议含版本号）。**公网必须绝对 https**；仅 Host 同源或内网联调才可用相对路径 / 私网 http（见 [04-runtime-flow.md](04-runtime-flow.md) §8） |
+| 3 | invoke 上游 | **响应体为 Content Envelope**（[03-content.md](03-content.md)）；公网 HTTPS；超时内返回 |
 | 4 | `requires` / `surfaces` | 与包一致；条目上须带 `requires` 供过滤 |
 | 5 | （可选）`config_schema` | 用户 API Key 等；`secret: true` 仅存 Host 云 |
 
@@ -64,7 +64,8 @@ Host 云把上游结果交给设备前，设备侧只认 Envelope。你怎么提
 
 - 索引与包：公开只读；**禁止**放 API Key。
 - 密钥：仅通过 Companion 安装向导写入 Host；设备 list **不得**回传 secret 值。
-- 媒体 URL：宜带过期；遵守设备 `limits`。
+- 媒体 URL：有时效则带 `playback.expires_at`（**Unix 秒**，见 [03-content.md](03-content.md) §2.4）；遵守设备 `limits`。
+- 只声明目标端**已实现**的 `requires` / `card_type`；未实现类型须能降级，勿把 `image_gallery` 等未支持能力写成「墙板必可装」。
 
 ## 8. 不要做的事
 
@@ -72,14 +73,18 @@ Host 云把上游结果交给设备前，设备侧只认 Envelope。你怎么提
 - 要求 Host 为你的 API fork 专用页面或专用 MCP 工具名（统一 `invoke` + `app_id` / 实例 id）  
 - 在 Envelope 里下发 GPIO / 控家指令（控家走平行通道，见 [04-runtime-flow.md](04-runtime-flow.md) §9）  
 - 把某一厂商的仓库路径、芯片丝印写进你的包当硬依赖  
+- 用公网 `http://` 的 `package_url` / 市场索引冒充可装（合规 Host 应拒绝）  
 
 ## 9. 样例
 
 | 文件 | 用途 |
 |------|------|
 | [examples/marketplace-sample.json](examples/marketplace-sample.json) | 市场索引 |
-| [examples/app-music-search.json](examples/app-music-search.json) | 应用包 |
-| [examples/envelope-*.json](examples/) | 上游应返回的 Envelope 形状 |
+| [examples/app-music-search.json](examples/app-music-search.json) | 应用包（音乐） |
+| [examples/app-demo-envelope.json](examples/app-demo-envelope.json) | **纯档 A** 应用包（上游即 Envelope） |
+| [examples/envelope-demo-plain.json](examples/envelope-demo-plain.json) | 档 A 上游响应（`plain_result`） |
+| [examples/envelope-*.json](examples/) | 其它 Envelope 形状 |
+| [examples/envelope_adapter.py](examples/envelope_adapter.py) | 档 B：任意 JSON → Envelope（**不进** Host 主路径） |
 
 ## 10. 改协议？
 

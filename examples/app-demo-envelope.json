@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "app_id": "demo.envelope",
+  "version": "1.0.0",
+  "name": "Envelope 透传样例",
+  "description": "纯档 A：上游直接返回 Content Envelope；任意合规 Host 透传+校验即可，无专用 adapter",
+  "categories": ["tool"],
+  "min_protocol": 1,
+  "requires": ["content.text", "action.invoke"],
+  "optional": ["content.error"],
+  "surfaces": ["card", "voice_reply", "home_tile"],
+  "fallback": { "card_type": "plain_result" },
+  "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  },
+  "invoke": {
+    "method": "GET",
+    "timeout_ms": 6000,
+    "url": "https://cdn.example.com/apps/demo.envelope/envelope.json",
+    "result_types": ["plain_result", "list", "error"],
+    "default_display": {
+      "card_type": "plain_result",
+      "preferred_surface": "card",
+      "max_items": 8
+    }
+  },
+  "expose_mcp": true,
+  "mcp": {
+    "name": "demo.envelope",
+    "description": "Tier-A Envelope passthrough sample"
+  },
+  "ui": {
+    "entry_title": "透传样例",
+    "entry_icon": "info"
+  }
+}

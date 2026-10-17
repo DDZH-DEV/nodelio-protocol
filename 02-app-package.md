@@ -37,6 +37,7 @@
   },
   "invoke": {
     "method": "POST",
+    "url": "https://api.example.com/v1/music/search",
     "timeout_ms": 6000,
     "result_types": ["music_list", "list", "text"],
     "default_display": {
@@ -71,11 +72,12 @@
 | `surfaces` | 见 [05-surfaces.md](05-surfaces.md) |
 | `fallback.card_type` | 端不支持默认 card 时的首选降级 |
 | `config_schema` | JSON Schema 子集；`secret: true` 的属性仅存 SERVER，list 接口不返回值 |
+| `invoke.url` | 可选。Host 代 invoke 的上游地址（公网 https；相对路径仅 Host 同源）。亦可安装后由控制台绑定，**不下发设备** |
 | `invoke.result_types` | 本应用可能返回的 `display.card_type` |
 | `invoke.default_display` | 默认 presentation hints |
-| `expose_mcp` | 是否进入小智 `self.skill.list` 语义 |
-| `mcp` | 给模型的短名与描述（调用仍走统一 `self.skill.invoke` + `skill_id`） |
-| `ui` | 入口文案/图标名提示，**不是**布局 |
+| `expose_mcp` | 是否进入统一技能 list（如 `self.skill.list`）语义 |
+| `mcp` | 给模型的短名与描述（调用仍走统一 `skill.invoke` + 实例 id，禁止每应用一个工具名） |
+| `ui.entry_title` / `entry_icon` | 入口短名与图标名提示；Host **可**用作启动台短名。**不是**布局或像素坐标 |
 
 ### 与现有 `PanelSkill` 对应（迁移提示）
 

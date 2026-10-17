@@ -108,9 +108,21 @@ Capability: `content.image`。Gallery：`card_type: image_gallery`，多条 `ima
 ```
 
 Capability: `content.music` / 列表卡 `content.music_list`。  
-`playback.url` 常有过期时间；勿永久写入 NVS。无 `media.play_*` 时隐藏 play，仍可展示列表。
+无 `media.play_*` 时隐藏 play，仍可展示列表。
 
-`music.search` 的 `keyword` **可选**。省略或空字符串表示列出当前账号曲库（条数受 `display.max_items` 限制），此时 `display.auto_play` 为 `false`，只展示不自动播放。有具体歌名/歌手才搜索，并可由端决定是否播第一条。
+#### `playback.expires_at`（硬性语义）
+
+| 项 | 要求 |
+|----|------|
+| 类型 | **Unix 时间戳，单位秒**（JSON number，如 `1790000000`）。**不是** RFC3339 字符串 |
+| 发布者 | 有时效的播放 URL **宜**带 `expires_at`；过期后端不得继续请求该 URL |
+| 端 | `expires_at > 0` 且当前时间已超过 → **禁止开播**；可提示用户重新 invoke 取新列表 |
+| Host | 透传时若 `music` 条目有 `playback.url` 但缺 `expires_at`，**可**补合理默认（建议 ≤ 30 分钟）；已过期则须去掉或失效 `playback.url`，不得假装仍可播 |
+| 存储 | 勿把带时效的 URL 永久写入 NVS / 本地库当唯一真相 |
+
+Host 为表达「已失效」可增加**可选**提示字段（非权威白名单）：`playback.expired: true`、条目级 `playable: false`。端不认识则忽略；**不得**依赖这些字段代替 `expires_at` 判断。
+
+`music.search` 的 `keyword` **可选**（产品语义示例）：省略或空字符串表示浏览/列曲库（条数受 `display.max_items` 限制），此时 `display.auto_play` 宜为 `false`。有具体关键词才搜索；是否自动播第一条由端与 `display.auto_play` 决定。
 
 ### 2.5 `news`
 
@@ -222,14 +234,16 @@ Capability: `content.error`（端应总能展示错误，即使未申报也建�
 | `music_list` | `list` → `plain_result`/`text` → `spoken` → `error.unsupported` |
 | `news_list` | `list` → `text` → `spoken` → `error.unsupported` |
 | `image_gallery` | 首张 `image` → `list`（仅 alt/title）→ `text` |
-| `weather` | `text` → `spoken` |
+| `weather` | `list` / `plain_result` / `text` → `spoken` |
 | `list` | `text` → `spoken` |
 | 未知类型 | 应用 `fallback.card_type` → `text` → `spoken` → `error.unsupported` |
 
+**可装 ≠ 每种 card 都有专用 UI。** 白名单里的 `weather`、`image_gallery` 等，若目标端尚未实现专用渲染，须走本矩阵降级，**禁止**在市场条目上假装「该端已完整支持」。新形态优先用已实现的 `list` / `plain_result`；真不够再按 [07-evolution.md](07-evolution.md) 提案。
+
 降级时：
 
-- `music` → `list_item`：title=歌名，subtitle=歌手；丢掉 playback 若无媒体能力。
-- 截断至 `limits.max_list_items` / `display.max_items` / `limits.max_content_bytes`。
+- `music` → `list_item`：title=歌名，subtitle=歌手；丢掉 playback 若无媒体能力或 URL 已过期。
+- 截断至 `limits.max_list_items` / `display.max_items` / `limits.max_content_bytes`；Host 硬截断时标 `truncated: true`。
 
 ## 5. MCP 承载
 

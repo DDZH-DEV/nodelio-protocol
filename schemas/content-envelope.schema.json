@@ -30,7 +30,27 @@
               "error"
             ]
           },
-          "id": { "type": "string" }
+          "id": { "type": "string" },
+          "playable": {
+            "type": "boolean",
+            "description": "Optional Host hint; not a substitute for playback.expires_at"
+          },
+          "playback": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "url": { "type": "string" },
+              "mime": { "type": "string" },
+              "expires_at": {
+                "type": "number",
+                "description": "Unix timestamp in seconds (not RFC3339)"
+              },
+              "expired": {
+                "type": "boolean",
+                "description": "Optional Host hint after expiry strip"
+              }
+            }
+          }
         }
       }
     },

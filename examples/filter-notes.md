@@ -17,6 +17,7 @@
 |--------|-------------|------|
 | `music.search` | 是 | `requires` 仅 content + invoke；播放在 `optional` |
 | `news.latest` | 是 | 有 `content.news_list` |
+| `demo.envelope` | 是 | 纯档 A；`content.text` + `action.invoke` |
 | `gallery.photo` | **否** | 缺 `content.image_gallery` |
 
 安装后：可 invoke 出列表卡；无 `media.play_local` 时隐藏播放 action，仍可展示歌名。  
@@ -24,7 +25,7 @@ with-media 样例下：点播走本机拉流；`concurrent_with_voice_session=fa
 
 ## 对 `android-phone`
 
-三个应用均可装（含 `gallery.photo`）。音乐可用 `fullscreen` + `media.play_local`。
+四个应用均可装（含 `demo.envelope`、`gallery.photo`）。音乐可用 `fullscreen` + `media.play_local`。
 
 ## 对 `voice-only`
 

@@ -82,10 +82,10 @@
 
 ```text
 用户选中可装 app
-  → SERVER 拉取 package_url（校验 HTTPS / 大小 / schema）
+  → Host 拉取 package_url（公网须 HTTPS；大小上限；schema_version + 必填；未知字段忽略）
   → 二次 requires / surfaces 校验
-  → 写入 owner 已安装表（scope=account|device）
-  → 用户填写 config_schema（secret 仅存 SERVER）
+  → 写入 owner 已安装表（scope=account|device；键含 market_id+app_id）
+  → 用户填写 config_schema（secret 仅存 Host）
   → 设备下次 list 可见
 ```
 

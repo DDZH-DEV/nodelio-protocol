@@ -2,7 +2,7 @@
   "schema_version": 1,
   "market_id": "com.example.nodelio-market",
   "name": "示例应用市场",
-  "description": "演示音乐与新闻技能；条目带 requires 供端过滤",
+  "description": "演示音乐、新闻、档 A 透传样例；条目带 requires 供端过滤",
   "updated_at": "2026-10-15T00:00:00Z",
   "apps": [
     {
@@ -29,6 +29,18 @@
       "requires": ["content.news_list", "action.invoke"],
       "optional": ["content.image", "action.open_url", "action.handoff"],
       "surfaces": ["card", "voice_reply", "notification"]
+    },
+    {
+      "app_id": "demo.envelope",
+      "name": "Envelope 透传样例",
+      "version": "1.0.0",
+      "package_url": "https://cdn.example.com/apps/demo.envelope/1.0.0.json",
+      "summary": "纯档 A：上游即 Envelope，无 Host 专用 adapter",
+      "categories": ["tool"],
+      "min_protocol": 1,
+      "requires": ["content.text", "action.invoke"],
+      "optional": ["content.error"],
+      "surfaces": ["card", "voice_reply", "home_tile"]
     },
     {
       "app_id": "gallery.photo",

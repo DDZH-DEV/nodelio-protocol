@@ -119,11 +119,14 @@ Surface + hints       出现在哪、怎么挤（非控件树）
 
 ## 版本
 
-- 文档与 JSON 根字段：`schema_version`（整数，当前 **1**）。
+- 文档与 JSON 根字段：`schema_version`（整数，当前 **1**）。**本轮为 Evolution A（澄清），不升号。**
 - 市场条目 / 应用包：`min_protocol` — 端的 `protocol_version` 须 ≥ 该值。
-- 未知字段：**忽略**。未知 `content.type` / `card_type`：走 [03-content.md](03-content.md) 降级矩阵。
+- 未知字段：**忽略**（Host/端不得因额外字段拒装或拒渲染）。未知 `content.type` / `card_type`：走 [03-content.md](03-content.md) 降级矩阵。
+- 公网传输须 HTTPS；私网 / 同源相对路径例外见 [04-runtime-flow.md](04-runtime-flow.md) §8。
+- 播放 URL 过期：`playback.expires_at` = **Unix 秒**，见 [03-content.md](03-content.md) §2.4。
 - 新能力 / 新 type：先作 `optional` + 降级；major 才升为普遍 `requires`。
 - **改协议本身**：见 [07-evolution.md](07-evolution.md)（分级、命名、合入清单）。
+- **纯档 A 最小样例**：[examples/app-demo-envelope.json](examples/app-demo-envelope.json) + [examples/envelope-demo-plain.json](examples/envelope-demo-plain.json)。
 
 ## 禁止
 

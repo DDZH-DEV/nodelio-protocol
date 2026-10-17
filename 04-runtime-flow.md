@@ -34,9 +34,9 @@ SERVER 调上游 → 规范化 Content Envelope → 端选 Surface 渲染
 3. 对每个 app 计算 `installable` / `missing_capabilities`。
 4. 用户安装 → 调用 SERVER（示例语义）：
    - `POST /api/…/skills/install` `{ market_id, app_id, package_url, scope, device_id? }`
-5. SERVER 拉取 package（HTTPS、大小上限、JSON Schema）。
+5. SERVER 拉取 package（见 §8 传输；大小上限；校验 `schema_version` 与必填字段；**未知字段忽略**，勿因额外字段拒装）。
 6. 二次 `requires` / `surfaces` / `min_protocol`。
-7. 返回 `config_schema` 表单；用户提交；`secret` 加密存 SERVER。
+7. 返回 `config_schema` 表单；用户提交；`secret` 仅存 Host（宜加密），设备 list 不回传值。
 
 ### 3.2 墙板
 
@@ -58,7 +58,9 @@ SERVER 调上游 → 规范化 Content Envelope → 端选 Surface 渲染
 
 - **默认路径**：上游 = Envelope（[08-publishers.md](08-publishers.md) 档 A/B）。Host **不得**因「无本厂 adapter」拒绝合法 Envelope 上游。
 - 超时建议 ≤ 6s；失败返回 `status:error`。
-- 响应体积不得超过目标设备 `limits.max_content_bytes`（Host 宜按设备档案裁剪摘要 + 分页）。
+- 响应体积不得超过目标设备 `limits.max_content_bytes`（Host 宜按设备档案裁剪并标 `truncated: true`）。
+- 媒体条目：尊重 `playback.expires_at`（[03-content.md](03-content.md) §2.4）；过期须重新 invoke。
+- Host **可**对同一设备 invoke 做合理限流，防刷上游；限流策略属产品，不进协议枚举。
 - 语音：统一 `skill.invoke`（名称以端实现为准）→ 同上；UI/播控解析 Envelope，不解析模型闲聊文本。
 - 路由键：安装实例须能回溯 `(market_id, app_id)`，避免多市场同名冲突。
 
@@ -88,13 +90,14 @@ SERVER 调上游 → 规范化 Content Envelope → 端选 Surface 渲染
 
 | 规则 | 要求 |
 |------|------|
-| 传输 | 市场 / package / 媒体 URL 使用 HTTPS |
-| 密钥 | 不下发设备；不进日志明文 |
-| 体积 | 遵守 `limits.max_content_bytes`；SERVER 可硬截断并标 `truncated:true` |
+| 传输（公网） | 市场索引、`package_url`、invoke 上游、媒体 URL：**HTTPS** |
+| 传输（例外） | Host **可**允许相对路径（与 Host 同源，如 `/static/…`）、`localhost` / 回环、RFC1918 / 链路本地上的 **http**，便于自建与联调。**公网绝对地址不得用 http 冒充可装** |
+| 密钥 | 不下发设备；不进日志明文；Host 宜加密存；轮换后须用户重填属产品行为 |
+| 体积 | 遵守 `limits.max_content_bytes`；Host 可硬截断并标 `truncated:true` |
 | 图片 | 遵守 `limits.image`；无 `content.image` 则剥图 |
-| 字段 | 禁止可执行脚本、LVGL 树、`data:` 可执行载荷 |
-| 市场 | SERVER 可维护 URL 黑名单 / 证书钉扎策略 |
-| 播放 URL | 尊重 `expires_at`；勿长期持久化 |
+| 字段 | 禁止可执行脚本、LVGL 树、`data:` 可执行载荷；包/Envelope **未知字段忽略** |
+| 市场 | Host 可维护 URL 主机允许/黑名单、大小与超时 |
+| 播放 URL | 尊重 `expires_at`（Unix 秒）；勿长期持久化；代理媒体时须鉴权并防滥用（大小/类型/跳转） |
 
 ## 9. 与控家并行
 

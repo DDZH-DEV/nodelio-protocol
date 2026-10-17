@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "app_id": "demo.envelope",
+  "status": "ok",
+  "content": [
+    {
+      "type": "text",
+      "id": "demo1",
+      "text": "档 A 透传样例：本 JSON 已是合法 Content Envelope；Host 仅校验与按设备 limits 裁剪，无专用 adapter。"
+    }
+  ],
+  "display": {
+    "card_type": "plain_result",
+    "title": "Envelope 样例",
+    "preferred_surface": "card",
+    "density": "compact",
+    "max_items": 8,
+    "ttl_sec": 300
+  },
+  "spoken": {
+    "text": "这是档A透传样例"
+  }
+}
