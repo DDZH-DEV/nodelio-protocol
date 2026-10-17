@@ -235,6 +235,7 @@ Capability: `content.error`（端应总能展示错误，即使未申报也建�
 | `upstream_error` | 上游非 2xx / 非 Envelope / 校验失败 | Host | 显示 `message`，可重试 |
 | `not_installed` | 目标实例未安装或被禁用 | Host / 端 | 隐藏 action，引导去 APP 安装 |
 | `config_missing` | 必填配置未填写 | Host | 提示补配置 |
+| `auth_required` | `invoke.url` 缺省且上游尚未由 Host 控制台绑定（02 §2） | Host | 引导用户在 APP/控制台完成绑定；不是用户密钥填错 |
 | `rate_limited` | 触发 Host 限流 | Host | 退避后重试；勿立即自动重试 |
 | `media_expired` | `playback.expires_at` 已过 | 端 | 重新 invoke 取新列表 |
 | `payload_too_large` | 超 `limits.max_content_bytes` 且无法有意义裁剪 | Host | 提示简化查询 |

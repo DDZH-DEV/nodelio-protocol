@@ -87,9 +87,11 @@
         "upstream_error",
         "not_installed",
         "config_missing",
+        "auth_required",
         "rate_limited",
         "media_expired",
         "payload_too_large",
+        "ambiguous_target",
         "internal"
       ],
       "description": "标准码表（SHOULD）。端与 Host 遇到未列出的 code：按通用错误展示，MUST NOT 拒绝整份 Envelope。"

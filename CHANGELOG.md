@@ -21,6 +21,23 @@
 
 **明确未做**：不升 `schema_version`；`web.open_url` 暂不进 `examples/` 样例（`envelope-news-list.json` 仍示范 handoff 一条路，等 companion 实现验收后再加正例，避免教未验收的写法）。
 
+### 分支清算（同轮）：从 `protocol-fixes` / `protocol-harden` 捞回的遗留价值
+
+删除未并入分支前逐项比对，捞回 3 条 main 未覆盖、且不与已定边界冲突的澄清：
+
+- **00 §3.5**：「`media.*` 不参与安装判定」显式成文（可装只看内容能力 `requires`；语音盒报了 `play_via_xiaozhi` 也装不了 `music.search`）。此前该结论只散落在 examples 表格里，是最容易被实现方搞反的一条。
+- **02 §2 / 03 §3.3**：`invoke.url` 缺省 = 安装后绑定的语义补全，新增 `auth_required` 错误码（绑定完成前 invoke 的确定结果，替代「返回什么算实现自定」）。
+- **02 §2**：`invoke.default_display` 与上游 `display` 冲突时**以上游为准**（信封是事实，包内是默认）。
+
+**拒收**（记录理由，防再次提出）：
+
+- `09-device-api.md` 及其路径/状态码映射——规定端↔Host HTTP，与 04 §0 边界直接冲突（合入轮已拒）。
+- Envelope 根加可选 `market_id`——路由权威已由 `(market_url_origin, market_id, app_id)` 与 `instance_id` 固定，信封再带身份字符串只会诱导端按裸 id 匹配，害大于利。
+- `harden` 的 §2.1 展开顺序——与 00 §4.1 同义但规则更弱（其「缺 capabilities 才按 profile 展开」允许线上依赖展开，正是 §4.1 要禁止的）。
+- `harden` 保持 marketplace/app-package 根 `additionalProperties:false` 的「作者侧 lint」立场——与 07 §5.1 冲突，维持现立场。
+- `fixes` 的 `auto_play` 小节表——05 §3 + 03 §2.4 已覆盖同一语义。
+- `fixes` 的「`profile`+`disabled` 与显式 `capabilities` 两种线上写法皆可」——与 00 §4.1 步骤 6（线上只写展开后的最终集合）冲突，维持现规则；构建期可用模板写法已在 §4.1 表格说明。
+
 ---
 
 ## 未发布（合入轮）— 以 `protocol-review-fixes` 为主干

@@ -131,6 +131,8 @@ surfaces_ok =
 
 `action.play` / `pause` / `next` / `prev`：表示端能展示并触发播控动作；**具体走哪条管线**由条目 `actions[].run` + `media.*` 决定。有 `action.play` 无任一 `media.play_*` 时：可展示列表，须隐藏/降级播放钮。
 
+**`media.*` 不参与安装判定（易错，必读）**：可装与否只看 `requires ⊆ capabilities`，而 `requires` 里应当是**内容能力**（如 `content.music_list`）。申报了 `media.play_via_xiaozhi` 的语音盒**仍然装不上** `music.search`（它缺 `content.music_list`）——媒体能力只决定「已装应用里出现播放 action 时走哪条管线」。反过来说：想让你的音乐应用装进语音盒，请另发**口述版**包，而不是指望对方申报媒体能力。见 [examples/filter-notes.md](examples/filter-notes.md)。
+
 音乐类应用推荐（播放勿进 `requires`，除非应用离开播放无意义）：
 
 ```json

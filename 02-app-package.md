@@ -74,11 +74,11 @@
 | `fallback.card_type` | 端不支持默认 card 时的首选降级。**安装时 Host 必须把它写进设备侧清单**（`fallback_card_type`，[04-runtime-flow.md](04-runtime-flow.md) §3.2），否则端拿不到、降级第 1 步无法执行 |
 | `config_schema` | JSON Schema **子集**（§2.1）；`secret: true` 的属性仅存 Host，任何面向端的响应不回传值 |
 | `input_schema` | 单次 invoke 参数的子集 schema；供端搜索框、MCP 工具参数与设备侧清单下发（[04-runtime-flow.md](04-runtime-flow.md) §3.2） |
-| `invoke.url` | 可选。Host 代 invoke 的上游地址：**公网必须 https**；相对路径仅与 Host 同源；私网 http 属 Host 联调模式（[04-runtime-flow.md](04-runtime-flow.md) §8.1）。亦可安装后由控制台绑定，**不下发设备** |
+| `invoke.url` | 可选。Host 代 invoke 的上游地址：**公网必须 https**；相对路径仅与 Host 同源；私网 http 属 Host 联调模式（[04-runtime-flow.md](04-runtime-flow.md) §8.1）。**缺省 = 安装后由 Host 控制台/配置流程绑定**（本文不描述绑定 UI，只定语义：`url` 缺失且尚未绑定时，端 invoke 应得 `code: auth_required`，见 [03-content.md](03-content.md) §3.3）。上游地址**永不下发设备** |
 | `invoke.method` | `POST`（推荐，参数放 body）\| `GET`（参数由 Host 按 `input_schema` 编码为 query）。Host **必须**按此调用，不自作主张 |
 | `invoke.timeout_ms` | 500–30000；缺省建议 6000 |
 | `invoke.result_types` | 本应用可能返回的 `display.card_type`；Host **可**据此校验信封是否越界（越界 → 拒或降级，属产品质量，须可预期） |
-| `invoke.default_display` | 默认 presentation hints；安装时映射进设备侧清单的 `default_card_type` / `preferred_surface` / `density` / `max_items` |
+| `invoke.default_display` | 默认 presentation hints；安装时映射进设备侧清单的 `default_card_type` / `preferred_surface` / `density` / `max_items`。**上游 Envelope 自带 `display` 时以上游为准**，本字段只在信封缺 `display` 或字段缺省时兜底 |
 | `expose_mcp` | 是否进入统一技能 list（如 `self.skill.list`）语义 |
 | `mcp` | 给模型的短名与描述（调用仍走统一 `skill.invoke` + **实例 id**，禁止每应用一个工具名）。`mcp.name` 只是展示/提示用途，**不得**要求 Host 用它注册独立 MCP 工具 |
 | `ui.entry_title` / `entry_icon` | 入口短名（建议 ≤12 字）与图标**名**提示；Host **可**用作启动台短名。**不是**布局、不是像素坐标、不是文件路径。端不认识的图标名**必须**回落到自有默认图标 |
