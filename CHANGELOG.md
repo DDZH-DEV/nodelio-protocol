@@ -7,6 +7,25 @@
 
 ---
 
+## 未发布（合入轮）— 以 `protocol-review-fixes` 为主干
+
+> 分支：`merge/protocol-review-main`。在 `deepseek-agent/protocol-review-fixes` 上吸收另两支的有用澄清；**不**合入 `protocol-harden` 的 `09-device-api.md`（Host HTTP 路径不属于协议，见 04 §0）。
+
+### 自 `protocol-harden` 吸收
+
+- **03 §3.4** 升为 capability ↔ `card_type` ↔ `content[].type` 三列总表（原仅 content↔card）。
+- **04 §5**：UI 异步规则去 LVGL/`nl_cmd_async` 绑定；§6 推送去产品路径名。
+- **README 禁止**：UI 对象树表述通用化；显式禁止在协议正文规定 Host HTTP 路径。
+
+### 自 `protocol-fixes` 吸收（review 未覆盖的残留）
+
+- **00 §3.2**：澄清 `action.open_url`（本端直开）与 `action.handoff` + `handoff.kind=open_url`（转交 companion）勿混用。
+- **04 §4**：补 HTTP method 语义（POST 有副作用 / GET 仅无副作用查询）；路径仍属 Host。
+
+（`auto_play`、厂商路径剥离、profile 线上形状等已在 review-fixes 覆盖，不再重复。）
+
+---
+
 ## 未发布（DeepSeek agent 审查修订轮）— Evolution **B**（可忽略扩展）+ **A**（澄清）
 
 > 分支：`deepseek-agent/protocol-review-fixes`。来源：一次面向外部开发者的完整可读性/可实现性审查。

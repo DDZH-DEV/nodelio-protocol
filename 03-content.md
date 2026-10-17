@@ -41,7 +41,7 @@ invoke（及未来推送）的统一结果格式。协议只定 JSON；各端按
 | `error` | `status=error` 时必填 | `{ code, message, retryable? }`；见 §3 |
 | `truncated` | 否 | Host 按 `limits` 硬截断时置 `true` |
 
-`display.card_type` 决定主渲染器；`content[]` 提供数据。两者应一致（如 `music_list` 配 `type:music` 条目）；对应关系与「哪些 type 没有专属 card_type」见 §3.4。
+`display.card_type` 决定主渲染器；`content[]` 提供数据。两者应一致（如 `music_list` 配 `type:music` 条目）；capability / card_type / content[].type 三列对照见 §3.4。
 
 **完整文档树（本文件内 §）**：§1 信封 → §2 条目类型 → §3 错误 → §4 actions → §5 降级矩阵 → §6 MCP 承载 → §7 Schema。
 
@@ -248,20 +248,25 @@ Capability: `content.error`（端应总能展示错误，即使未申报也建�
 | `message` | 面向人的短句；**禁止**含密钥、上游鉴权头、内部堆栈、他人设备 ID |
 | 样例 | [examples/envelope-error.json](examples/envelope-error.json) |
 
-### 3.4 单条目 card_type 的对应关系
+### 3.4 capability ↔ card_type ↔ content[].type（v1 总表）
 
-| `content[].type` | 可直接用作 `display.card_type` | 否则用什么 |
-|------------------|-------------------------------|------------|
-| `text` | `plain_result` | — |
-| `list_item` | `list` | — |
-| `image` | `image`（单图）/ `image_gallery`（多图） | — |
-| `music` | `music_list`（含 1 条也算列表） | 单首可播场景用 `music_list` + `max_items:1`；**没有** `music` 这个 card_type |
-| `news` | `news_list` | 同上；单条新闻用 `news_list` + `max_items:1` |
-| `weather` | `weather` | — |
-| `action` | 无专用 card_type：作为 `list` / `plain_result` 卡内的 action，或 `content[]` 独立块由端渲染成按钮 | — |
-| `error` | `error` | — |
+三处命名**各自独立**，靠下表映射；新增任一项须按 [07-evolution.md](07-evolution.md) C 级同时补齐三列与 [schemas/vocabulary.schema.json](schemas/vocabulary.schema.json)。
 
-> 结论：v1 的 `card_type` 是**卡片形态**，`content[].type` 是**条目类型**，二者不是一一映射。声明能力时用 `content.*`（条目级可渲染），选择渲染器时用 `card_type`。
+| capability（端申报） | `display.card_type` | `content[].type` | 说明 |
+|----------------------|---------------------|------------------|------|
+| `content.text` | `plain_result` | `text` | 纯文本 |
+| `content.list` | `list` | `list_item` | 通用列表 |
+| `content.image` | `image` | `image` | 单图 |
+| `content.image_gallery` | `image_gallery` | `image`（多条） | 翻页为端本地行为 |
+| `content.music` | `music_list`（可 `max_items:1`） | `music` | v1 **没有** `music` card_type；单首也用列表卡 |
+| `content.music_list` | `music_list` | `music` | 歌曲列表 |
+| `content.news` | `news_list`（可 `max_items:1`） | `news` | 同上，单条无专用 card |
+| `content.news_list` | `news_list` | `news` | 新闻列表 |
+| `content.weather` | `weather` | `weather` | 三者同名，别混用途 |
+| `content.action` | 无专属：嵌在 `list` / `plain_result` 或独立块变按钮 | `action` | 独立动作块 |
+| `content.error` | `error` | `error` | 错误展示，见 §3 |
+
+> 结论：v1 的 `card_type` 是**卡片形态**，`content[].type` 是**条目类型**，`content.*` 是**端能力**——三者不是一一同名映射。声明能力时用 `content.*`，选择渲染器时用 `card_type`，填数据时用 `content[].type`。
 
 ## 4. actions[] 公共形状
 

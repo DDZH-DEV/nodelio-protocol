@@ -121,6 +121,7 @@ Host 云调上游 → 校验/裁剪 Content Envelope → 端选 Surface 渲染
 ```
 
 - **默认路径**：上游 = Envelope（[08-publishers.md](08-publishers.md) 档 A/B）。Host **不得**因「无本厂 adapter」拒绝合法 Envelope 上游。
+- **HTTP method**：路径与具体 URL 由 Host 实现决定（协议不规定路径）。带参数 body / 有副作用的 invoke 用 `POST`；仅无副作用的纯查询（`app-package.invoke.method=GET`）可用 `GET` 并随查询串传参。两端/Host 须就方法语义一致。
 - **请求/响应语义**：请求体只含 `input_schema` 参数，**禁止**携带密钥；响应体是一个完整 Content Envelope（含失败情形——用 HTTP 状态 + `status:"error"` 双轨时，Envelope **必须**仍然合法，见 [03-content.md](03-content.md) §3.1）。
 - `request_id`：由**发起方**（端 / Host / 语音链路）生成并原样回带，用于串联日志；Host 不得自行替换后又不告知。格式不限，建议 `[A-Za-z0-9_-]{1,64}`。
 - 超时：`invoke.timeout_ms`（默认建议 ≤ 6000ms）；超时 → `status:"error"` + `code:"upstream_timeout"`。
@@ -136,13 +137,13 @@ Host 云调上游 → 校验/裁剪 Content Envelope → 端选 Surface 渲染
 1. 选 Surface：`display.preferred_surface` ∈ 本机 `surfaces`，否则按 [05-surfaces.md](05-surfaces.md) 优先级。
 2. 选 card_type：支持则渲染，否则降级矩阵。
 3. Action：按 `run` + capability 显示；点击：
-   - **禁止**在 UI 主线程 / LVGL 回调内同步 HTTP。
-   - ESP：本地乐观更新 → `nl_cmd_async`（或等价）后台 invoke。
+   - **禁止**在任何 UI 主线程 / 渲染回调内同步 HTTP（协议通用规则，不绑定具体 UI 框架）。
+   - 端自选异步通道：本地乐观更新 → 后台 invoke；实现细节属端产品文档，**不写进协议**。
 4. 播放：`media.play_local` / `media.play_via_xiaozhi` / `handoff`；URL 过期须重新 invoke。
 
 ## 6. 推送（可选）
 
-云端主动更新（新闻、天气）可用 MQTT / `panel/notify` 下发 **同一 Envelope**，勿依赖 MCP `notifications/*`（小智侧可能忽略）。`ttl_sec` 控制缓存。
+云端主动更新（新闻、天气）可用各产品既有推送通道下发 **同一 Envelope**（MQTT / 长连接 / 轮询等，路径名属 Host 实现）。`ttl_sec` 控制缓存。勿依赖 MCP `notifications/*` 作为唯一通路（部分助理固件可能忽略）。
 
 ## 7. 多端与 scope
 
@@ -179,7 +180,7 @@ Host 会用**自己**的网络栈去拉取任意第三方提供的 URL（市场�
 | 身份绑定 | `(market_url_origin → market_id)` 绑定见 [01-marketplace.md](01-marketplace.md) §6.1，防同名市场接管已装实例 |
 | 体积 | 遵守 `limits.max_content_bytes`；Host 可硬截断并标 `truncated:true` |
 | 图片 | 遵守 `limits.image`；无 `content.image` 则剥图；图片 URL 同受 §8.1 传输与内网规则约束 |
-| 字段 | 禁止可执行脚本、LVGL 树、`data:` 可执行载荷；包/Envelope **未知字段忽略**（`additionalProperties` 一律 `true`，见 [07-evolution.md](07-evolution.md) §5.1） |
+| 字段 | 禁止可执行脚本、UI 对象树 / 控件树、`data:` 可执行载荷；包/Envelope **未知字段忽略**（`additionalProperties` 一律 `true`，见 [07-evolution.md](07-evolution.md) §5.1） |
 | 播放 URL | 尊重 `expires_at`（Unix 秒）；勿长期持久化；代理媒体时须鉴权并按 §8.1 校验目标，限制响应大小与 MIME，禁止把设备可控 URL 无校验转发 |
 | 滥用 | Host **可**记录 invoke 审计（含 `deviceId`）并对同一设备限流；返回 `rate_limited` |
 | 拒装诊断 | Host 因 schema/必填/形状不合法能力名拒装时，**必须**返回可定位信息（字段路径 + 非法值），不得只回「校验失败」 |

@@ -97,8 +97,8 @@ surfaces_ok =
 | `action.invoke` | 可向 Host 云发起 skill invoke |
 | `action.play` | 可触发「播放」类 action（具体管线见 media.*） |
 | `action.pause` / `action.next` / `action.prev` | 播控 |
-| `action.open_url` | 可打开 http(s)（多为手机） |
-| `action.handoff` | 可把动作交给 companion 设备 |
+| `action.open_url` | 端**本地直接**打开 http(s)（多为手机）。注意：`handoff.kind=open_url` 归 `action.handoff`（交给 companion 打开），两者不要混用 |
+| `action.handoff` | 可把动作交给 companion 设备（含 `handoff.kind=open_url` 转交 companion 打开） |
 | `net.http_via_server` | 仅经 Host 云访问外网（墙板默认）；名字里的 server 指 Host 云 |
 | `net.http_direct` | 允许端直连外网（慎用） |
 

@@ -178,10 +178,11 @@ Surface + hints       出现在哪、怎么挤（非控件树）
 
 ## 禁止
 
-- 下发 LVGL 对象树、任意 UI 脚本、未校验的可执行字段
+- 下发任何 UI 对象树 / 控件树 / 像素坐标（无论 LVGL、Compose 还是自绘）、任意 UI 脚本、未校验的可执行字段
 - 把第三方 API Key 明文下发到设备日志或固件
 - 为每个第三方 API 在固件中 fork 专用页面（应增 capability / surface / card_type）
 - 要求每个社区应用必须进入某一 Host 的「云内专用适配白名单」才能安装（档 A/B 即应可装，见 [08-publishers.md](08-publishers.md) §3）
 - 把单一产品路径 / 私有仓库字段名写进协议正文（见 [07-evolution.md](07-evolution.md) §2）
 - 用「设备有某硬件」推断能力：过滤与渲染只认运行时申报（[00-capabilities.md](00-capabilities.md) §3.6、[06-platform-profiles.md](06-platform-profiles.md)）
+- 在协议正文规定 Host 的 HTTP 路径 / 鉴权头名（语义与 JSON 形状属协议；路径属 Host 产品文档）
 
