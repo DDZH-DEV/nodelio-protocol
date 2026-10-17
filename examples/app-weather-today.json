@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "app_id": "weather.today",
+  "version": "1.0.0",
+  "name": "今日天气",
+  "description": "查询当前天气与三日预报；档 A：上游直接返回 Envelope",
+  "icon_url": "https://cdn.example.com/icons/weather.png",
+  "publisher": {
+    "name": "Example Weather Author",
+    "url": "https://weather.example.com",
+    "contact": "dev@example.com"
+  },
+  "categories": ["weather"],
+  "min_protocol": 1,
+  "requires": ["content.weather", "action.invoke"],
+  "optional": ["content.list", "content.image", "input.voice"],
+  "surfaces": ["card", "home_tile", "voice_reply"],
+  "fallback": { "card_type": "list" },
+  "config_schema": {
+    "type": "object",
+    "properties": {
+      "api_key": {
+        "type": "string",
+        "title": "API Key",
+        "description": "只存 Host 云，不会下发到设备",
+        "secret": true,
+        "ui_hint": "password"
+      },
+      "units": {
+        "type": "string",
+        "title": "单位",
+        "enum": ["metric", "imperial"],
+        "default": "metric",
+        "ui_hint": "select"
+      }
+    },
+    "required": ["api_key"]
+  },
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "city": { "type": "string", "title": "城市", "maxLength": 32 }
+    },
+    "required": []
+  },
+  "invoke": {
+    "method": "POST",
+    "url": "https://api.example.com/v1/weather",
+    "timeout_ms": 6000,
+    "result_types": ["weather", "list", "plain_result"],
+    "default_display": {
+      "card_type": "weather",
+      "preferred_surface": "card",
+      "density": "compact",
+      "ttl_sec": 600
+    }
+  },
+  "expose_mcp": true,
+  "mcp": {
+    "name": "weather.today",
+    "description": "Get current weather and 3-day forecast for a city"
+  },
+  "ui": {
+    "entry_title": "天气",
+    "entry_icon": "cloudy"
+  }
+}

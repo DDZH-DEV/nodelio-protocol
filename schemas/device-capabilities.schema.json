@@ -1,32 +1,39 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nodelio.local/protocol/schemas/device-capabilities.schema.json",
+  "$id": "https://raw.githubusercontent.com/DDZH-DEV/nodelio-protocol/main/schemas/device-capabilities.schema.json",
   "title": "DeviceCapabilities",
+  "description": "端能力申报。权威字段语义见 00-capabilities.md；生效集合计算与「线上形状」见其 §4.1（重要：profile / extra_capabilities / disabled 是构建期输入，线上上报 SHOULD 只含展开后的最终 capabilities）。本 schema 仍接受构建期混合格式以便 Host 兼容解析。additionalProperties=true：未知字段必须忽略（README「版本」、04 §8）。",
   "type": "object",
   "required": ["schema_version", "protocol_version", "platform", "capabilities"],
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "schema_version": { "type": "integer", "const": 1 },
     "protocol_version": { "type": "integer", "minimum": 1 },
-    "platform": { "type": "string", "minLength": 1 },
-    "profile": {
+    "platform": {
       "type": "string",
-      "enum": ["esp32-panel-480", "android-phone", "linux-kiosk", "voice-only"]
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "自由短名，小写连字符：esp32-panel / android / linux / voice"
     },
+    "profile": { "$ref": "vocabulary.schema.json#/$defs/profile_v1" },
     "capabilities": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
-      "uniqueItems": true
+      "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" },
+      "uniqueItems": true,
+      "description": "本构建已实现的能力集合（权威）。校验策略见 00 §3.8：形状不合法=协议错误；合法但未收录=忽略+warning，禁止拒装。"
     },
     "extra_capabilities": {
       "type": "array",
-      "items": { "type": "string" },
-      "uniqueItems": true
+      "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" },
+      "uniqueItems": true,
+      "description": "构建期输入：对 profile 展开结果的追加项。线上上报 SHOULD NOT 与已展开的 capabilities 混用。"
     },
     "disabled": {
       "type": "array",
-      "items": { "type": "string" },
-      "uniqueItems": true
+      "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" },
+      "uniqueItems": true,
+      "description": "构建期输入：从展开结果中去掉。线上上报 SHOULD 直接给裁剪后的 capabilities，不再带 disabled。"
     },
     "surfaces": {
       "type": "array",
@@ -35,38 +42,38 @@
     },
     "limits": {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "max_content_bytes": { "type": "integer", "minimum": 256 },
         "max_list_items": { "type": "integer", "minimum": 1 },
         "image": {
           "type": "object",
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "allowed": { "type": "boolean" },
             "max_edge_px": { "type": "integer", "minimum": 1 },
             "formats": {
               "type": "array",
-              "items": { "type": "string", "enum": ["jpeg", "png", "webp"] }
+              "items": { "type": "string", "enum": ["jpeg", "png", "webp"] },
+              "uniqueItems": true,
+              "description": "短名枚举（与 media.formats 的 MIME 形式不同，是 v1 既定形状；改统一属 D 级，勿在 B/C 偷改）。端比对 Envelope 条目的 image/jpeg 等 MIME 时按前缀映射。"
             }
           }
         },
         "media": {
           "type": "object",
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "formats": {
               "type": "array",
-              "items": { "type": "string", "minLength": 1 },
-              "uniqueItems": true
+              "items": { "type": "string", "pattern": "^(audio|video)/[a-z0-9.+-]+$" },
+              "uniqueItems": true,
+              "description": "本机可解码的 playback.mime 白名单，完整 MIME 形式（audio/mpeg）。"
             },
             "max_bitrate_kbps": { "type": "integer", "minimum": 8 },
             "max_duration_sec": { "type": "integer", "minimum": 1 },
             "concurrent_with_voice_session": { "type": "boolean" },
-            "fetch": {
-              "type": "string",
-              "enum": ["http_via_server", "http_direct"]
-            }
+            "fetch": { "type": "string", "enum": ["http_via_server", "http_direct"] }
           }
         }
       }

@@ -43,6 +43,18 @@
       "surfaces": ["card", "voice_reply", "home_tile"]
     },
     {
+      "app_id": "weather.today",
+      "name": "今日天气",
+      "version": "1.0.0",
+      "package_url": "https://cdn.example.com/apps/weather.today/1.0.0.json",
+      "summary": "requires 含 content.weather：无屏音箱装不上（须另发口述版）",
+      "categories": ["weather"],
+      "min_protocol": 1,
+      "requires": ["content.weather", "action.invoke"],
+      "optional": ["content.list", "content.image"],
+      "surfaces": ["card", "home_tile", "voice_reply"]
+    },
+    {
       "app_id": "gallery.photo",
       "name": "高清图库",
       "version": "1.0.0",
@@ -50,8 +62,8 @@
       "summary": "需要图库与全屏能力（墙板通常不可装）",
       "categories": ["tool"],
       "min_protocol": 1,
-      "requires": ["content.image_gallery", "action.invoke", "display.color"],
-      "optional": ["input.touch"],
+      "requires": ["content.image_gallery", "action.invoke"],
+      "optional": ["input.touch", "display.color"],
       "surfaces": ["fullscreen", "card"]
     }
   ]

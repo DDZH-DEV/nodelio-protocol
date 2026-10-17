@@ -55,17 +55,36 @@
 | 省电 | 播放中可出声，背光仍可按 idle 熄 | 产品策略；协议不管 |
 
 **不合理：** 因 profile 名或「板上有喇叭」就在市场里默认「可播音乐」。  
-**合理：** 未通播控前运行时示例：
+**合理：** 未通播控前，线上上报（完整展开 + 诚实裁剪，形状规则见 [00-capabilities.md](00-capabilities.md) §4.1）：
 
 ```json
 {
-  "profile": "esp32-panel-480",
-  "disabled": ["media.play_local", "action.play"],
-  "surfaces": ["card", "home_tile", "notification", "voice_reply"]
+  "schema_version": 1,
+  "protocol_version": 1,
+  "platform": "esp32-panel",
+  "capabilities": [
+    "content.text",
+    "content.list",
+    "content.music_list",
+    "content.news_list",
+    "content.weather",
+    "content.error",
+    "action.invoke",
+    "net.http_via_server",
+    "input.touch",
+    "input.voice",
+    "display.color"
+  ],
+  "surfaces": ["card", "home_tile", "notification", "voice_reply"],
+  "limits": {
+    "max_content_bytes": 4096,
+    "max_list_items": 8,
+    "image": { "allowed": true, "max_edge_px": 480, "formats": ["jpeg", "png"] }
+  }
 }
 ```
 
-（无播控时可暂不报 `now_playing`。）
+要点：`media.play_local` / `action.play` **根本不在** `capabilities` 里（不是靠 `disabled` 表达）；无播控时不报 `now_playing`。构建期源文件可以写 `profile` + `disabled`，但发往 Host 前必须展开完毕。
 
 - 当前诚实样例（无本机播放）：[examples/device-esp32-panel-480.json](examples/device-esp32-panel-480.json)  
 - 播控验收后样例：[examples/device-esp32-panel-480-with-media.json](examples/device-esp32-panel-480-with-media.json)
@@ -76,7 +95,7 @@
 
 ### 3.4 语音工具（MCP 等）
 
-若经助理工具调用 `invoke`：端须双投递——UI/播控消费 Envelope，模型侧只给短摘要。见 [03-content.md](03-content.md) §5。
+若经助理工具调用 `invoke`：端须双投递——UI/播控消费 Envelope，模型侧只给短摘要。见 [03-content.md](03-content.md) §6。
 
 ---
 

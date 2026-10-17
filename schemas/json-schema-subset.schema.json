@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/DDZH-DEV/nodelio-protocol/main/schemas/json-schema-subset.schema.json",
+  "title": "NodeLioJsonSchemaSubset",
+  "description": "config_schema / input_schema 允许的 JSON Schema 子集（02 §2.1）。目的：任何端/APP 都能用简单渲染器生成表单；超出子集属 D 级变更。未知关键字：Host 忽略并可记 warning，禁止据此拒装。",
+  "type": "object",
+  "required": ["type"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "type": { "type": "string", "enum": ["object", "string", "number", "integer", "boolean", "array"] },
+    "title": { "type": "string", "maxLength": 64 },
+    "description": { "type": "string", "maxLength": 512 },
+    "default": {},
+    "enum": { "type": "array" },
+    "const": {},
+    "required": { "type": "array", "items": { "type": "string" } },
+    "properties": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#" }
+    },
+    "items": { "$ref": "#" },
+    "minLength": { "type": "integer", "minimum": 0 },
+    "maxLength": { "type": "integer", "minimum": 1 },
+    "pattern": { "type": "string" },
+    "minimum": { "type": "number" },
+    "maximum": { "type": "number" },
+    "exclusiveMinimum": { "type": "number" },
+    "exclusiveMaximum": { "type": "number" },
+    "minItems": { "type": "integer", "minimum": 0 },
+    "maxItems": { "type": "integer", "minimum": 1 },
+    "uniqueItems": { "type": "boolean" },
+    "format": { "type": "string", "enum": ["email", "uri", "date", "date-time", "ipv4", "ipv6"] },
+    "secret": {
+      "type": "boolean",
+      "description": "NodeLio 扩展（**非** JSON Schema 标准关键字）：true = 该属性值仅存 Host 云，加密保存，且 MUST NOT 出现在任何面向端的响应 / 日志 / invoke Body 回显中（02 §2.1、04 §8.2、08 §7）。"
+    },
+    "ui_hint": {
+      "type": "string",
+      "enum": ["text", "textarea", "select", "number", "toggle", "password"],
+      "description": "NodeLio 扩展：表单控件提示。端/APP 不认识该值时按 type + secret 自行选择控件（secret=true 必须用密码型控件）。"
+    }
+  },
+  "additionalProperties": true
+}

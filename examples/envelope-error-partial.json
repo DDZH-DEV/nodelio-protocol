@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "request_id": "req_music_003",
+  "app_id": "music.search",
+  "status": "ok",
+  "content": [
+    {
+      "type": "music",
+      "id": "song_001",
+      "title": "晴天",
+      "artist": "周杰伦",
+      "duration_ms": 269000,
+      "playback": {
+        "url": "https://cdn.example.com/audio/qingtian.mp3",
+        "mime": "audio/mpeg",
+        "expires_at": 1792300000
+      },
+      "actions": [
+        {
+          "id": "play",
+          "title": "播放",
+          "run": "local",
+          "local": "media.play",
+          "requires": ["media.play_local"]
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "id": "song_002_partial",
+      "code": "upstream_error",
+      "message": "第二首的播放地址获取失败，其余结果正常。"
+    }
+  ],
+  "display": {
+    "card_type": "music_list",
+    "title": "搜索结果",
+    "preferred_surface": "card",
+    "density": "compact",
+    "max_items": 8
+  },
+  "spoken": {
+    "text": "找到晴天；另一首的播放地址没取到。"
+  }
+}

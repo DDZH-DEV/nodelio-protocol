@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/DDZH-DEV/nodelio-protocol/main/schemas/installed-app-list.schema.json",
+  "title": "InstalledAppList",
+  "description": "设备侧「已安装脱敏清单」文档形状（04 §3.2 / §4.1）。语义：端据此列出可 invoke 的应用、决定是否显示、并在降级时使用 fallback_card_type。MUST NOT 含 secret 值、invoke 上游地址、任何密钥。additionalProperties=true：未知字段忽略。传输路径/鉴权属 Host 产品实现（04 §1.1）。",
+  "type": "object",
+  "required": ["schema_version", "apps"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "device_id": { "type": "string", "description": "可选：本清单对应的设备 ID" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "apps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["instance_id", "market_id", "app_id", "version", "name", "enabled"],
+        "additionalProperties": true,
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Host 生成的安装实例 ID，唯一解析 (market_url_origin, market_id, app_id)。端 invoke 与 MCP 引用用它。"
+          },
+          "market_id": { "$ref": "marketplace.schema.json#/properties/market_id" },
+          "market_name": { "type": "string", "description": "展示「来自：{market_name}」，避免同名混淆。" },
+          "app_id": { "$ref": "marketplace.schema.json#/properties/apps/items/properties/app_id" },
+          "version": { "$ref": "marketplace.schema.json#/properties/apps/items/properties/version" },
+          "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "summary": { "type": "string", "maxLength": 200 },
+          "icon_url": { "type": "string", "format": "uri" },
+          "categories": { "type": "array", "items": { "type": "string" } },
+          "min_protocol": { "type": "integer", "minimum": 1 },
+          "enabled": {
+            "type": "boolean",
+            "description": "true 仅当 requires ⊆ 本机 capabilities 且 surfaces 有交集且配置完整且未废弃。false 时端 MUST NOT 提供 invoke 入口。"
+          },
+          "disabled_reason": {
+            "type": "string",
+            "enum": ["missing_capabilities", "missing_surfaces", "protocol_too_low", "config_required", "uninstalled_pending", "deprecated", "revoked", "internal"],
+            "description": "enabled=false 时 SHOULD 给出。"
+          },
+          "missing_capabilities": {
+            "type": "array",
+            "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" }
+          },
+          "missing_surfaces": { "type": "array", "items": { "$ref": "surfaces.schema.json" } },
+          "requires": {
+            "type": "array",
+            "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" },
+            "description": "包内权威 requires，供端本地复核（Host 预过滤不可替代本地计算，00 §1）。"
+          },
+          "optional": {
+            "type": "array",
+            "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" }
+          },
+          "surfaces": { "type": "array", "items": { "$ref": "surfaces.schema.json" } },
+          "default_card_type": {
+            "$ref": "vocabulary.schema.json#/$defs/card_type_v1",
+            "description": "来自包 invoke.default_display.card_type；端据此选主渲染器。"
+          },
+          "fallback_card_type": {
+            "$ref": "vocabulary.schema.json#/$defs/card_type_v1",
+            "description": "来自包 fallback.card_type。**必须**下发到端，否则 00 §5 / 03 §4 的第 1 步降级无从执行。"
+          },
+          "preferred_surface": { "$ref": "surfaces.schema.json" },
+          "density": { "type": "string", "enum": ["compact", "normal", "rich"] },
+          "max_items": { "type": "integer", "minimum": 1 },
+          "input_schema": {
+            "type": "object",
+            "description": "单次 invoke 参数 JSON Schema 子集（02 §2）。端搜索框与 MCP 工具参数用它。"
+          },
+          "config_present": {
+            "type": "boolean",
+            "description": "必填配置是否已填写。**MUST NOT** 回传任何 secret 值或明文配置。"
+          },
+          "config_missing_keys": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "缺失的配置属性名（仅属性名）。端可提示「请在 APP 中补全配置」。"
+          },
+          "deprecated": { "type": "boolean" },
+          "ui": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "entry_title": { "type": "string", "maxLength": 12 },
+              "entry_icon": { "type": "string", "maxLength": 64 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

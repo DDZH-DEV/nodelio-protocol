@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "device_id": "panel-01",
+  "generated_at": "2026-10-17T07:00:00Z",
+  "apps": [
+    {
+      "instance_id": "inst_7f3a",
+      "market_id": "com.example.nodelio-market",
+      "market_name": "示例应用市场",
+      "app_id": "music.search",
+      "version": "1.0.0",
+      "name": "音乐搜索",
+      "summary": "搜索并播放歌曲",
+      "enabled": true,
+      "min_protocol": 1,
+      "requires": ["content.music_list", "action.invoke"],
+      "optional": ["media.play_local", "media.play_via_xiaozhi", "content.image"],
+      "surfaces": ["card", "now_playing", "voice_reply"],
+      "default_card_type": "music_list",
+      "fallback_card_type": "list",
+      "preferred_surface": "card",
+      "density": "compact",
+      "max_items": 8,
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "keyword": { "type": "string", "title": "关键词" },
+          "limit": { "type": "integer", "default": 5, "minimum": 1, "maximum": 20 }
+        }
+      },
+      "config_present": true,
+      "deprecated": false,
+      "ui": { "entry_title": "音乐", "entry_icon": "music_note" }
+    },
+    {
+      "instance_id": "inst_2c81",
+      "market_id": "com.example.nodelio-market",
+      "market_name": "示例应用市场",
+      "app_id": "demo.envelope",
+      "version": "1.0.0",
+      "name": "Envelope 透传样例",
+      "enabled": true,
+      "min_protocol": 1,
+      "requires": ["content.text", "action.invoke"],
+      "surfaces": ["card", "voice_reply", "home_tile"],
+      "default_card_type": "plain_result",
+      "fallback_card_type": "plain_result",
+      "preferred_surface": "card",
+      "config_present": true
+    },
+    {
+      "instance_id": "inst_5d40",
+      "market_id": "io.acme.community",
+      "market_name": "ACME 社区市场",
+      "app_id": "news.latest",
+      "version": "1.2.0",
+      "name": "每小时新闻",
+      "enabled": false,
+      "disabled_reason": "config_required",
+      "config_present": false,
+      "config_missing_keys": ["api_key"],
+      "requires": ["content.news_list", "action.invoke"],
+      "default_card_type": "news_list",
+      "fallback_card_type": "list"
+    },
+    {
+      "instance_id": "inst_9b12",
+      "market_id": "io.other.gallery",
+      "market_name": "另一家图库市场",
+      "app_id": "gallery.photo",
+      "version": "2.1.0",
+      "name": "高清图库",
+      "enabled": false,
+      "disabled_reason": "missing_capabilities",
+      "missing_capabilities": ["content.image_gallery"],
+      "requires": ["content.image_gallery", "action.invoke"],
+      "surfaces": ["fullscreen", "card"],
+      "default_card_type": "image_gallery",
+      "fallback_card_type": "list"
+    }
+  ]
+}

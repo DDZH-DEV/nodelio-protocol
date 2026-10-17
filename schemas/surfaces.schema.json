@@ -1,14 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nodelio.local/protocol/schemas/surfaces.schema.json",
+  "$id": "https://raw.githubusercontent.com/DDZH-DEV/nodelio-protocol/main/schemas/surfaces.schema.json",
   "title": "NodeLioSurface",
+  "description": "交互面名。形状约束（pattern），不用 enum 硬拒：未知 surface 必须被忽略而非拒收整份文档（00 §3.8、07 §5.1）。v1 权威集合见 vocabulary.schema.json#/$defs/surface_v1。",
   "type": "string",
-  "enum": [
-    "card",
-    "home_tile",
-    "fullscreen",
-    "voice_reply",
-    "notification",
-    "now_playing"
-  ]
+  "pattern": "^[a-z][a-z0-9_]{0,31}$"
 }

@@ -61,8 +61,9 @@ usable_surfaces = app.surfaces ∩ device.surfaces
 | `max_items` | int | 与 `limits.max_list_items` 取更严 |
 | `ttl_sec` | int | 缓存建议 |
 | `title` | string | 面标题 |
+| `auto_play` | bool | **可选**。结果到达后是否自动播放首选条目；**缺省 = false**，端不得自行默认自动播。仅当端声明任一 `media.play_*` 才有意义（[03-content.md](03-content.md) §2.4 `keyword` 语义与此一致） |
 
-端可忽略 hints，但不得执行未识别的扩展为代码。
+端可忽略 hints，但不得执行未识别的扩展为代码。未知 hint 名：忽略（形状词典见 [schemas/vocabulary.schema.json](schemas/vocabulary.schema.json)）。
 
 ### 端强制策略示例
 
@@ -88,11 +89,11 @@ usable_surfaces = app.surfaces ∩ device.surfaces
 - `home_tile` 是技能入口，**不替代** layout 里的灯控磁贴。
 - 墙板可将技能入口放在系统「技能」页或少量首页槽位；schema 增量须向后兼容。
 - 磁贴点击 → 本地打开 `card` 或直接 `invoke` 默认查询（由应用 `ui` / 配置决定）。
-- **钉选元数据**（`pinned` / `home_order` / 默认 invoke 参数）由 Host 云按设备隔离下发，**不属于** Envelope 字段；见实现备忘 `ESP32-IDF/docs/panel-skills.md`。
+- **钉选元数据**（`pinned` / `home_order` / 默认 invoke 参数）**不属于** Envelope 字段，也不属于本协议：由 Host 云按设备隔离下发，形状由各 Host 自己的产品文档规定。协议只保证：这些元数据不得改变 §1 的 surface 语义与 §3 的 hints 含义。
 
 ## 6. Schema 片段
 
-Surface 枚举见 [schemas/surfaces.schema.json](schemas/surfaces.schema.json)（供 `$ref`）。
+Surface 名的**形状**约束见 [schemas/surfaces.schema.json](schemas/surfaces.schema.json)（供 `$ref`；小写短名，未知值忽略）；v1 **权威集合**见 [schemas/vocabulary.schema.json](schemas/vocabulary.schema.json) `$defs.surface_v1`。二者分工与理由见 [00-capabilities.md](00-capabilities.md) §3.8、[07-evolution.md](07-evolution.md) §5.1。
 
 ## 7. 平台呈现策略（不属于协议强制）
 

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "request_id": "req_news_002",
+  "app_id": "news.latest",
+  "status": "error",
+  "content": [],
+  "display": {
+    "card_type": "error",
+    "title": "新闻暂时不可用",
+    "preferred_surface": "card",
+    "density": "compact"
+  },
+  "error": {
+    "code": "upstream_timeout",
+    "message": "上游新闻服务在 6 秒内未响应，请稍后重试。",
+    "retryable": true
+  },
+  "spoken": {
+    "text": "新闻服务暂时没有响应，过一会儿再试。"
+  }
+}

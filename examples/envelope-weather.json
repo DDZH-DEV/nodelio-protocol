@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "request_id": "req_w_01",
+  "app_id": "weather.today",
+  "status": "ok",
+  "content": [
+    {
+      "type": "weather",
+      "id": "w_sh_today",
+      "location": "上海",
+      "temp_c": 24,
+      "text": "多云",
+      "humidity": 60,
+      "icon": "cloudy"
+    }
+  ],
+  "display": {
+    "card_type": "weather",
+    "title": "上海 · 今日",
+    "preferred_surface": "card",
+    "density": "compact",
+    "prefer_image": false,
+    "max_items": 3,
+    "ttl_sec": 600
+  },
+  "spoken": {
+    "text": "上海现在 24 度，多云。"
+  }
+}

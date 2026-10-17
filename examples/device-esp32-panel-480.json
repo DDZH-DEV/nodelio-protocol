@@ -2,7 +2,6 @@
   "schema_version": 1,
   "protocol_version": 1,
   "platform": "esp32-panel",
-  "profile": "esp32-panel-480",
   "capabilities": [
     "content.text",
     "content.list",
@@ -16,7 +15,6 @@
     "input.voice",
     "display.color"
   ],
-  "disabled": ["media.play_local", "action.play"],
   "surfaces": ["card", "home_tile", "notification", "voice_reply"],
   "limits": {
     "max_content_bytes": 4096,

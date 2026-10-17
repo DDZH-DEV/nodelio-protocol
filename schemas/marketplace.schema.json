@@ -1,15 +1,32 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nodelio.local/protocol/schemas/marketplace.schema.json",
+  "$id": "https://raw.githubusercontent.com/DDZH-DEV/nodelio-protocol/main/schemas/marketplace.schema.json",
   "title": "MarketplaceIndex",
+  "description": "市场索引。additionalProperties=true：未知字段必须忽略（04 §8；07 §6 允许 x_ 扩展）。ID 语法见 01-marketplace.md §1.1；market_id 绑定规则见 §6.1。",
   "type": "object",
   "required": ["schema_version", "market_id", "name", "apps"],
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "schema_version": { "type": "integer", "const": 1 },
-    "market_id": { "type": "string", "minLength": 1 },
-    "name": { "type": "string", "minLength": 1 },
-    "description": { "type": "string" },
+    "market_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*(\\.[a-z0-9][a-z0-9]*(-[a-z0-9]+)*){2,}$",
+      "minLength": 4,
+      "maxLength": 253,
+      "description": "反向域名风格，至少三段（com.example.skills）。Host 须与来源 URL 绑定，见 01 §6.1。"
+    },
+    "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "description": { "type": "string", "maxLength": 512 },
+    "publisher": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "可选但强烈推荐：真实主体与联系方式，供 Host 做运营与滥用处理。",
+      "properties": {
+        "name": { "type": "string", "maxLength": 128 },
+        "url": { "type": "string", "format": "uri" },
+        "contact": { "type": "string", "maxLength": 256, "description": "邮箱或可达地址" }
+      }
+    },
     "updated_at": { "type": "string", "format": "date-time" },
     "apps": {
       "type": "array",
@@ -23,31 +40,59 @@
           "min_protocol",
           "requires"
         ],
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
-          "app_id": { "type": "string", "minLength": 1 },
-          "name": { "type": "string" },
-          "version": { "type": "string" },
-          "package_url": { "type": "string", "format": "uri" },
+          "app_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*(\\.[a-z0-9][a-z0-9]*(-[a-z0-9]+)*)*$",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "市场内唯一；大小写敏感存储，但 Host 对『仅大小写不同』的 id MUST 视为碰撞拒绝（防欺骗）。语法见 01 §1.1。"
+          },
+          "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$",
+            "description": "semver（01 §1.1）。比较用 semver 优先级；pre-release 不得作为『可直接升级』目标。"
+          },
+          "package_url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "description": "公网必须 https。私网/联调例外见 04 §8：Host 校验层放开，schema 层保持默认严格。"
+          },
+          "package_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "可选：包内容 SHA-256（hex 小写）。Host 拉取后校验；不匹配 MUST 拒装。发布者改包即改 URL（含版本）或更新此值。"
+          },
           "icon_url": { "type": "string", "format": "uri" },
-          "summary": { "type": "string" },
+          "summary": { "type": "string", "maxLength": 200 },
           "categories": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": { "anyOf": [ { "$ref": "vocabulary.schema.json#/$defs/category_v1" }, { "type": "string", "minLength": 1, "maxLength": 32 } ] },
+            "description": "推荐用 v1 分类；自定义值须可原样显示，不得因此隐藏条目。"
           },
           "min_protocol": { "type": "integer", "minimum": 1 },
           "requires": {
             "type": "array",
-            "items": { "type": "string" },
-            "minItems": 1
+            "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" },
+            "minItems": 1,
+            "uniqueItems": true
           },
           "optional": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": { "$ref": "vocabulary.schema.json#/$defs/wellformed_name" },
+            "uniqueItems": true
           },
           "surfaces": {
             "type": "array",
-            "items": { "$ref": "surfaces.schema.json" }
+            "items": { "$ref": "surfaces.schema.json" },
+            "uniqueItems": true
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "可选：条目废弃提示。新装显示警告，已装 MUST 继续可 invoke（01 §1.1）。"
           }
         }
       }

@@ -61,8 +61,27 @@
 | surface | 短槽位名，无厂商前缀 | `card`、`now_playing` |
 | `local` 动作 ID | `media.*` / `ui.*` 等，与 capability 区分 | `media.play`（动作）vs `media.play_local`（能力） |
 | profile | `平台-形态` 或已有枚举扩展 | `esp32-panel-480`；新 profile 先论证不能用 `extra`/`disabled` |
+| `market_id` | 反向域名风格，**≥3 段**，小写 + 数字 + 连字符 | `com.example.skills`；语法见 [01-marketplace.md](01-marketplace.md) §1.1 |
+| `app_id` | 小写点分段，建议 ≥2 段 | `weather.today`、`music.search` |
+| 错误 `code` | `snake_case`，**唯一风格** | `upstream_timeout`；码表见 [03-content.md](03-content.md) §3.3 |
+| `handoff.kind` | `snake_case` 动词短语 | `open_url` |
+| 分类（`categories`） | 优先用 v1 词表；自定义须可原样显示 | `music` / `tool` / `info` |
 
-**禁止：** 同义多名（`play_song` + `media.play_local`）、厂商前缀进核心词典（`acme.weather`）、把 URL 路径或类名当 type。
+**禁止：** 同义多名（`play_song` + `media.play_local`）、厂商前缀进核心词典（`acme.weather`）、把 URL 路径或类名当 type、一个概念两种大小写风格（`error.unsupported` 与 `unsupported_content` 并存即为反例，已统一为后者）。
+
+### 4.1 关于 `media.play_via_xiaozhi`（既有违规的处置）
+
+该名字含厂商词，与 §4「禁止厂商前缀进核心词典」冲突，且第三方读不懂。**决议**：
+
+| 步骤 | 动作 | 级别 |
+|------|------|------|
+| 1（已做） | 在 [00-capabilities.md](00-capabilities.md) §3.5.1 补权威语义（注入助理/云侧音频下行管线，非本机解码） | A |
+| 2 | 提案 `media.play_via_assistant` 作为正名，词典同时保留旧名 | B |
+| 3 | 新发布的端与包**用新名**；Host 须把旧名按同义解析（alias 表进 `vocabulary.schema.json`） | B |
+| 4 | 一个 major 弃用期后从新端申报中移除旧名 | E |
+
+禁止：跳过 §2 语义说明直接改名（会破坏既有端），或在词典里留两个不同实现含义的名字。
+
 
 ## 5. 版本规则
 
@@ -73,6 +92,20 @@
   - 旧端行为（忽略 / 报错 / 降级）
   - 迁移窗口（建议至少一个次版本弃用期再删）
 - 新能力进入应用 `requires`（变为安装硬条件）：须已在多端可选落地一段时间，或明确只服务新 major。
+
+### 5.1 schema 校验立场（硬性，决定 PR 里怎么写 schema）
+
+协议承诺「未知字段忽略、未知枚举值降级」，因此 schema 必须与承诺一致，否则 B/C 级演进一落地就校验失败：
+
+| 位置 | 必须怎么写 | 不得怎么写 |
+|------|------------|------------|
+| 任何文档根与对象 | `additionalProperties: true` | ❌ `false`（会拒 `x_` 扩展与旧 Host 新增字段，违反 [04-runtime-flow.md](04-runtime-flow.md) §8.2） |
+| 名字集合类字段：`capabilities`、`requires`、`optional`、`local`、`content[].type`、`card_type`、`surface`、`actions[].run`、`handoff.kind`、错误 `code` | **形状** `pattern` + `anyOf`（v1 词典 ∪ 形状合法的自由串），运行时降级 | ❌ 纯 `enum` 硬拒 |
+| 真正的封闭集合（`status`、`density`、`fetch`、`limits.image.formats`、`invoke.method`、`ui_hint`、`profile`） | 可以 `enum`（新增取值属 D 级，因为旧端遇未知值无法安全行为） | — |
+| v1 权威词典 | 只维护在 [schemas/vocabulary.schema.json](schemas/vocabulary.schema.json) `$defs`，其余 schema 一律 `$ref` | ❌ 在各 schema 里复制一份枚举（会漂移） |
+| URL 字段 | `pattern: ^https://` 保持默认严格 | ❌ 为「内网联调」放宽 schema（例外是 Host 校验层的产品行为，见 [04-runtime-flow.md](04-runtime-flow.md) §8.1） |
+
+判定口诀：**「端能安全忽略」→ 形状约束；「端不知道该怎么办」→ enum。**
 
 ## 6. 厂商 / 实验扩展（未进白名单）
 
@@ -97,15 +130,20 @@
 提案须同时更新（缺一不收）：
 
 - [ ] 对应正文：`00`～`06` 中相关章节
-- [ ] `schemas/*.json`（枚举 / 字段）
-- [ ] `examples/` 至少一份正例；若影响过滤，更新 `filter-notes.md`
+- [ ] **`schemas/vocabulary.schema.json`**（新能力名 / `content.type` / `card_type` / `surface` / `local` / 错误码 / 分类的**唯一权威表**）——若名字集合有变化却只改了 Markdown，视为未完成
+- [ ] 其余 `schemas/*.json`（字段 / `$ref`），并遵守 §5.1 的校验立场（新增对象字段 → `additionalProperties: true`）
+- [ ] 若改**设备侧清单**或安装/配置载荷：改 `schemas/installed-app-list.schema.json` + `04` §3.2 + 样例
+- [ ] 若改 `config_schema` / `input_schema` 允许范围：改 `schemas/json-schema-subset.schema.json` + `02` §2.1
+- [ ] `examples/` 至少一份正例；影响过滤则更新 `filter-notes.md`；涉错误则更新 `envelope-error.json`
 - [ ] **降级路径**：未知或旧端如何落到 `list` / `text` / `spoken` / `error`
-- [ ] **谁申报、谁 requires**：能力进词典；应用示例用 `optional` 还是 `requires` 有理由
-- [ ] **无本机路径 / 无私有仓假设**
+- [ ] **谁申报、谁 requires**：能力进词典；应用示例用 `optional` 还是 `requires` 有理由；`requires` 须过 [00-capabilities.md](00-capabilities.md) §3.9 分类
+- [ ] **无本机路径 / 无私有仓假设**（正文与样例都不得引用协议仓之外的文件）
 - [ ] 变更说明含级别（§3）与版本影响（§5）
-- [ ] 若改匹配或安全：改 [04-runtime-flow.md](04-runtime-flow.md)
+- [ ] 若改匹配或安全：改 [04-runtime-flow.md](04-runtime-flow.md)（含 §8.1 SSRF 边界）
+- [ ] 更新 `CHANGELOG.md`（把状态性表述留在 changelog，不写进权威正文）
+- [ ] 交叉引用编号是否因本次改动漂移：全库 grep `§` 与 `NN-*.md` 链接
 
-仅 A 级可只改 Markdown。
+仅 A 级可只改 Markdown（但仍须检查链接与 §5.1 立场没被文档矛盾）。
 
 ## 8. 评审关注点（维护者）
 
@@ -113,7 +151,9 @@
 2. 旧端是否仍能忽略或降级？
 3. 是否与现有 type 重复、能否用 `list`+`actions` 表达？
 4. 是否引入可执行或布局下发？
-5. 安全与 limits 是否仍可执行？
+5. 安全与 limits 是否仍可执行？新 URL 类字段是否过 §8.1（SSRF / 重定向逐跳）？
+6. 是否**外部开发者读得懂**：字段有无「谁产生、何时失效、失败怎么办」；新增概念是否需要进 `09-quickstart.md` 或术语表？
+7. schema 与文档是否一致（§5.1 立场、vocabulary 是否同步）？
 
 维护者可要求：先落地「一端实验扩展」，再晋升白名单。
 
@@ -144,9 +184,9 @@
 
 | 角色 | 读什么 | 改什么 |
 |------|--------|--------|
-| 应用/市场作者 | **[08-publishers.md](08-publishers.md)**、01～03、examples | 自己的 JSON / Envelope 上游；不改 Protocol |
-| 端固件作者 | 00、03、05、06 + schemas | 本端实现与申报；实验用 §6 |
-| Host 云作者 | 04、08 §3–4、schemas | 透传 Envelope、安装键 `(market_id, app_id)`；不把档 C 写成协议义务 |
+| 应用/市场作者 | **[09-quickstart.md](09-quickstart.md)** → **[08-publishers.md](08-publishers.md)**、01～03、examples | 自己的 JSON / Envelope 上游；不改 Protocol |
+| 端固件作者 | **09-quickstart.md**、00、03、05、06 + schemas（尤其 `installed-app-list`） | 本端实现与申报；实验用 §6 |
+| Host 云作者 | 04（含 §0 规范性边界、§3.2、§8.1）、08 §3–4、schemas | 透传 Envelope、安装键 `(market_url_origin, market_id, app_id)`；不把档 C 写成协议义务 |
 | 协议贡献者 | **本文 + 全文** | 按清单改本目录 |
 
-实现参考（某一厂商的 SERVER/固件）**不是**协议正文；第三方无该仓库也不影响遵守本契约。
+实现参考（某一厂商的 SERVER/固件）**不是**协议正文；第三方无该仓库也不影响遵守本契约。反过来说：本协议**不规定** Host 的 HTTP 路径与鉴权头（[04-runtime-flow.md](04-runtime-flow.md) §0），需要对接某一具体 Host 时必须再读该 Host 的产品文档。

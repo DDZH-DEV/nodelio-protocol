@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/DDZH-DEV/nodelio-protocol/main/schemas/vocabulary.schema.json",
+  "title": "NodeLioProtocolVocabulary",
+  "description": "协议 v1 权威词典（能力名 / content.type / card_type / surface / local 动作 / 错误码 / profile）。正文表格与本文件冲突时以本文件为准，并按 07-evolution.md §7 同步修订。",
+  "type": "object",
+  "$defs": {
+    "wellformed_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$",
+      "description": "能力名与 local 动作 ID 的通用形状：小写、点分段。校验策略见 00-capabilities.md §3.8：形状不合法 = 协议错误；形状合法但不在 v1 词典 = 忽略并 warning，禁止拒装。"
+    },
+    "capability_name_v1": {
+      "type": "string",
+      "enum": [
+        "content.text",
+        "content.list",
+        "content.image",
+        "content.image_gallery",
+        "content.music",
+        "content.music_list",
+        "content.news",
+        "content.news_list",
+        "content.weather",
+        "content.action",
+        "content.error",
+        "action.invoke",
+        "action.play",
+        "action.pause",
+        "action.next",
+        "action.prev",
+        "action.open_url",
+        "action.handoff",
+        "net.http_via_server",
+        "net.http_direct",
+        "input.touch",
+        "input.voice",
+        "input.key",
+        "input.rotary",
+        "display.color",
+        "display.mono",
+        "display.none",
+        "media.play_local",
+        "media.play_via_xiaozhi",
+        "media.play_handoff"
+      ]
+    },
+    "content_type_v1": {
+      "type": "string",
+      "enum": ["text", "list_item", "image", "music", "news", "weather", "action", "error"]
+    },
+    "card_type_v1": {
+      "type": "string",
+      "enum": [
+        "plain_result",
+        "list",
+        "image",
+        "image_gallery",
+        "music_list",
+        "news_list",
+        "weather",
+        "error"
+      ]
+    },
+    "surface_v1": {
+      "type": "string",
+      "enum": ["card", "home_tile", "fullscreen", "voice_reply", "notification", "now_playing"]
+    },
+    "local_action_v1": {
+      "type": "string",
+      "enum": ["media.play", "media.pause", "media.stop", "media.next", "media.prev"]
+    },
+    "handoff_kind_v1": {
+      "type": "string",
+      "enum": ["open_url"]
+    },
+    "profile_v1": {
+      "type": "string",
+      "enum": ["esp32-panel-480", "android-phone", "linux-kiosk", "voice-only"]
+    },
+    "error_code_v1": {
+      "type": "string",
+      "enum": [
+        "unsupported_content",
+        "upstream_timeout",
+        "upstream_error",
+        "not_installed",
+        "config_missing",
+        "rate_limited",
+        "media_expired",
+        "payload_too_large",
+        "internal"
+      ],
+      "description": "标准码表（SHOULD）。端与 Host 遇到未列出的 code：按通用错误展示，MUST NOT 拒绝整份 Envelope。"
+    },
+    "category_v1": {
+      "type": "string",
+      "enum": ["music", "news", "weather", "home", "tool", "info", "other"],
+      "description": "推荐分类。允许发布者自定义值：UI 须原样显示未知分类，MUST NOT 因此隐藏条目。"
+    }
+  }
+}
