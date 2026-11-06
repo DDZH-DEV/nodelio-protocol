@@ -82,6 +82,7 @@
 | `expose_mcp` | 是否进入统一技能 list（如 `self.skill.list`）语义 |
 | `mcp` | 给模型的短名与描述（调用仍走统一 `skill.invoke` + **实例 id**，禁止每应用一个工具名）。`mcp.name` 只是展示/提示用途，**不得**要求 Host 用它注册独立 MCP 工具 |
 | `ui.entry_title` / `entry_icon` | 入口短名（建议 ≤12 字）与图标**名**提示；Host **可**用作启动台短名。**不是**布局、不是像素坐标、不是文件路径。端不认识的图标名**必须**回落到自有默认图标 |
+| `push` | 可选：`{ modes, max_severity, min_interval_sec }`，声明主动消息提醒（Notice）模式子集、最高级别与最小间隔；Host 安装时签发实例级 `push_token` 并强制钳制越界推送（见 [10-push.md](10-push.md) §2） |
 
 ### 2.1 `config_schema` / `input_schema` 允许的 JSON Schema 子集（硬性）
 

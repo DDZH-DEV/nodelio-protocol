@@ -125,6 +125,29 @@
         "description": { "type": "string", "maxLength": 512 }
       }
     },
+    "push": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "主动消息提醒声明（见 10-push.md §2）。",
+      "properties": {
+        "modes": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["info", "action", "alert"] },
+          "uniqueItems": true
+        },
+        "max_severity": {
+          "type": "string",
+          "enum": ["normal", "warning", "critical"],
+          "default": "normal"
+        },
+        "min_interval_sec": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400,
+          "default": 30
+        }
+      }
+    },
     "ui": {
       "type": "object",
       "additionalProperties": true,

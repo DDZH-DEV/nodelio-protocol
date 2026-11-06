@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/DDZH-DEV/nodelio-protocol/main/schemas/notice.schema.json",
+  "title": "NoticePayload",
+  "description": "主动消息提醒（Notice）载荷结构。语义见 10-push.md。additionalProperties=true：未知字段必须忽略（07 §5.1）。",
+  "type": "object",
+  "required": [
+    "mode",
+    "title"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "notice_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_:-]{1,64}$",
+      "description": "幂等唯一标识；应用入站可省（由 Host 生成），Host 下发端侧必填。"
+    },
+    "app_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "来源应用 ID；入站时由 Host 按 push_token 强制绑定。"
+    },
+    "instance_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 260,
+      "description": "安装实例键（如 market_id::app_id）。"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["info", "action", "alert"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["normal", "warning", "critical"],
+      "default": "normal"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "coalesce_key": {
+      "type": "string",
+      "maxLength": 64,
+      "description": "同源状态折叠键；同键新通知替换旧未读，不累加角标。"
+    },
+    "ttl_sec": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 86400,
+      "default": 300
+    },
+    "wake": {
+      "type": "boolean"
+    },
+    "invoke": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "app_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 260
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "disposition": {
+      "type": "string",
+      "enum": ["pending", "resolved"],
+      "default": "pending",
+      "description": "入站专用。resolved 时须带 coalesce_key 或 notice_id；Host 将匹配 pending 标为 resolved 并下发 notice_clear。见 10-push.md §5.1。"
+    }
+  }
+}
+

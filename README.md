@@ -136,6 +136,7 @@ Surface + hints       出现在哪、怎么挤（非控件树）
 | [06-platform-profiles.md](06-platform-profiles.md) | 平台附录：申报诚实、媒体现实、与协议的弱相关边界 |
 | [07-evolution.md](07-evolution.md) | **完善协议前必读**：变更分级、命名、版本、**schema 校验立场（§5.1）**、合入清单 |
 | [08-publishers.md](08-publishers.md) | **市场/应用发布者**：上架、多市场、Envelope 上游、防撞键 |
+| [10-push.md](10-push.md) | **主动消息提醒与推送**：Notice 载荷、四层去重与重启保持、`push` 包声明与 `push_token` 授权边界 |
 | [CHANGELOG.md](CHANGELOG.md) | 变更历史与本轮澄清范围 |
 | [schemas/](schemas/) | JSON Schema + **vocabulary（权威词典）** |
 | [examples/](examples/) | 样例（含错误信封、已装清单、MCP 承载） |

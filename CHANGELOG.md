@@ -7,6 +7,12 @@
 
 ---
 
+## 未发布 — Evolution **B**（可忽略扩展）：Notice 上游消警
+
+1. **[10-push.md](10-push.md) §5.1 / [schemas/notice.schema.json](schemas/notice.schema.json)**：入站 Notice 增加可选 `disposition`（`pending` \| `resolved`）。`resolved` 须带 `coalesce_key` 或 `notice_id`；Host 将匹配 `pending` 标为已消警并向端下发既有 `notice_clear`。旧端只消费 `notice_clear`，无需改固件。不升 `schema_version`。
+
+---
+
 ## 未发布（follow-up 轮）— Evolution **C**（白名单扩张）+ **A/B**（澄清与形状修正）— 不升版本
 
 > 直接在 `main` 上落地；来源：对合入轮的复查。逐项对应复查结论 1–5。
@@ -18,6 +24,7 @@
 5. **schema 立场收尾**（07 §5.1 口诀的漏网）：`profile` 与 `limits.image.formats` 原为纯 `enum`，端/Host 对未知值本可安全忽略却会被校验拒掉 → 均改形状约束；`media.formats` 形状放宽到可带 codec 参数（`;codecs=opus`）。07 §5.1 表与 00 §3.8 说明同步。
 6. **样例统一线上形状**：4 个 `device-*.json` 全部去掉 `profile`（00 §4.1 步骤 6；`profile_v1` 词典与 00 §4.2 模板保留，仅示例不再混用）。
 7. **01 §7 Schema** 补列 `installed-app-list` / `app-package` / `vocabulary`。
+8. **新增 [10-push.md](10-push.md) 与 [schemas/notice.schema.json](schemas/notice.schema.json)（Evolution B 可忽略扩展）**：定义主动消息提醒（Notice）载荷、三态 `mode`（`info`/`action`/`alert`）与 `severity`、`notice_id` 幂等 + `coalesce_key` 同源折叠 + 重启静默对账不重弹规则、以及应用包可选 `push` 声明与实例级 `push_token` 授权/级别钳制契约。
 
 **明确未做**：不升 `schema_version`；`web.open_url` 暂不进 `examples/` 样例（`envelope-news-list.json` 仍示范 handoff 一条路，等 companion 实现验收后再加正例，避免教未验收的写法）。
 

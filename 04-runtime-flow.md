@@ -142,9 +142,10 @@ Host 云调上游 → 校验/裁剪 Content Envelope → 端选 Surface 渲染
    - 端自选异步通道：本地乐观更新 → 后台 invoke；实现细节属端产品文档，**不写进协议**。
 4. 播放：`media.play_local` / `media.play_via_xiaozhi` / `handoff`；URL 过期须重新 invoke。
 
-## 6. 推送（可选）
+## 6. 推送与消息提醒（可选）
 
-云端主动更新（新闻、天气）可用各产品既有推送通道下发 **同一 Envelope**（MQTT / 长连接 / 轮询等，路径名属 Host 实现）。`ttl_sec` 控制缓存。勿依赖 MCP `notifications/*` 作为唯一通路（部分助理固件可能忽略）。
+- **主动消息提醒（Notice）**：第三方应用声明 `push` 后，经 Host 推送网关投递轻量 Notice（`info` / `action` / `alert`），端负责 `notice_id` 幂等、`coalesce_key` 折叠、未读持久化与重启静默对账；用户点开或高优自动展开时通过标准 `invoke` 拉取 Content Envelope。完整契约见 [10-push.md](10-push.md) 与 [schemas/notice.schema.json](schemas/notice.schema.json)。
+- **内容静默刷新**：新闻、天气等后台卡片更新亦可用各产品既有推送通道下发同一 Envelope（传输路径名属 Host 实现），`ttl_sec` 控制缓存。勿依赖 MCP `notifications/*` 作为唯一通路（部分助理固件可能忽略）。
 
 ## 7. 多端与 scope
 
