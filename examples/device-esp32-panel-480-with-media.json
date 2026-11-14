@@ -9,6 +9,7 @@
     "content.news_list",
     "content.weather",
     "content.error",
+    "content.action",
     "action.invoke",
     "action.play",
     "action.pause",
